@@ -1,6 +1,9 @@
+import pytest
+
 from pages.home_page import HomePage
 
 
+@pytest.mark.smoke
 def test_home_dashboard_smoke(page) -> None:
     home_page = HomePage(page)
 
