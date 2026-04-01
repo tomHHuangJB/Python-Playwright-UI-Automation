@@ -53,6 +53,17 @@ If you want to run against a non-default app location:
 BASE_UI_URL=http://localhost:5173 BASE_API_URL=http://localhost:3001 pytest tests/smoke -m smoke
 ```
 
+Run all test with browser:
+```
+HEADLESS=false pytest 
+```
+
+Run smoke test with browser:
+```
+HEADLESS=false pytest tests/smoke -m smoke
+
+```
+
 Useful env vars:
 
 - `BASE_UI_URL`
