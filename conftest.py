@@ -12,6 +12,10 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from config.settings import Settings, load_settings
+from clients.api_client import ApiClient
+from fixtures.data_factory import DataFactory
+from fixtures.sut import SutController
+from utils.artifact_utils import artifact_dir, capture_screenshot, stop_trace
 
 
 def pytest_configure(config: pytest.Config) -> None:
@@ -48,8 +52,7 @@ def browser(playwright_instance: Playwright, settings: Settings) -> Browser:
 
 @pytest.fixture
 def context(browser: Browser, settings: Settings, request: pytest.FixtureRequest) -> BrowserContext:
-    test_artifact_dir = settings.artifacts_dir / request.node.name
-    test_artifact_dir.mkdir(parents=True, exist_ok=True)
+    test_artifact_dir = artifact_dir(settings.artifacts_dir, request.node.name)
 
     context = browser.new_context(
         base_url=settings.base_ui_url,
@@ -62,10 +65,7 @@ def context(browser: Browser, settings: Settings, request: pytest.FixtureRequest
 
     failed = bool(getattr(request.node, "rep_call", None) and request.node.rep_call.failed)
     trace_target = test_artifact_dir / "trace.zip"
-    if failed or settings.trace == "on":
-        context.tracing.stop(path=str(trace_target))
-    else:
-        context.tracing.stop()
+    stop_trace(context, failed, settings.trace, trace_target)
     context.close()
 
 
@@ -76,7 +76,23 @@ def page(context: BrowserContext, settings: Settings, request: pytest.FixtureReq
 
     failed = bool(getattr(request.node, "rep_call", None) and request.node.rep_call.failed)
     if failed or settings.screenshot == "on":
-        screenshot_dir = settings.artifacts_dir / request.node.name
-        screenshot_dir.mkdir(parents=True, exist_ok=True)
-        page.screenshot(path=str(screenshot_dir / "failure.png"), full_page=True)
+        screenshot_target = artifact_dir(settings.artifacts_dir, request.node.name) / "failure.png"
+        capture_screenshot(page, screenshot_target)
     page.close()
+
+
+@pytest.fixture(scope="session")
+def api_client(settings: Settings) -> ApiClient:
+    client = ApiClient(settings.base_api_url)
+    yield client
+    client.close()
+
+
+@pytest.fixture(scope="session")
+def data_factory() -> DataFactory:
+    return DataFactory()
+
+
+@pytest.fixture
+def sut(api_client: ApiClient) -> SutController:
+    return SutController(api_client)
