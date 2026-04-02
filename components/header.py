@@ -16,6 +16,18 @@ class Header:
         return self.page.get_by_test_id("nav-auth")
 
     @property
+    def forms_nav(self):
+        return self.page.get_by_test_id("nav-forms")
+
+    @property
+    def tables_nav(self):
+        return self.page.get_by_test_id("nav-tables")
+
+    @property
+    def dynamic_nav(self):
+        return self.page.get_by_test_id("nav-dynamic")
+
+    @property
     def mega_menu(self):
         return self.page.get_by_test_id("mega-menu")
 
@@ -30,3 +42,12 @@ class Header:
 
     def go_to_auth(self) -> None:
         self.auth_nav.click()
+
+    def go_to_forms(self) -> None:
+        self.forms_nav.click()
+
+    def go_to_tables(self) -> None:
+        self.tables_nav.click()
+
+    def go_to_dynamic(self) -> None:
+        self.dynamic_nav.click()
