@@ -52,7 +52,7 @@ def browser(playwright_instance: Playwright, settings: Settings) -> Browser:
 
 @pytest.fixture
 def context(browser: Browser, settings: Settings, request: pytest.FixtureRequest) -> BrowserContext:
-    test_artifact_dir = artifact_dir(settings.artifacts_dir, request.node.name)
+    test_artifact_dir = artifact_dir(settings.artifacts_dir, request.node.nodeid)
 
     context = browser.new_context(
         base_url=settings.base_ui_url,
@@ -76,7 +76,7 @@ def page(context: BrowserContext, settings: Settings, request: pytest.FixtureReq
 
     failed = bool(getattr(request.node, "rep_call", None) and request.node.rep_call.failed)
     if failed or settings.screenshot == "on":
-        screenshot_target = artifact_dir(settings.artifacts_dir, request.node.name) / "failure.png"
+        screenshot_target = artifact_dir(settings.artifacts_dir, request.node.nodeid) / "failure.png"
         capture_screenshot(page, screenshot_target)
     page.close()
 

@@ -25,6 +25,8 @@ class Settings:
     artifacts_dir: Path
     viewport_width: int
     viewport_height: int
+    perf_navigation_max_ms: float
+    perf_dom_content_loaded_max_ms: float
 
 
 def load_settings() -> Settings:
@@ -42,4 +44,6 @@ def load_settings() -> Settings:
         artifacts_dir=Path(os.getenv("ARTIFACTS_DIR", str(project_root / "artifacts"))),
         viewport_width=int(os.getenv("VIEWPORT_WIDTH", "1440")),
         viewport_height=int(os.getenv("VIEWPORT_HEIGHT", "900")),
+        perf_navigation_max_ms=float(os.getenv("PERF_NAVIGATION_MAX_MS", "4000")),
+        perf_dom_content_loaded_max_ms=float(os.getenv("PERF_DOM_CONTENT_LOADED_MAX_MS", "2500")),
     )
