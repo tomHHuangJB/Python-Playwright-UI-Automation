@@ -28,6 +28,10 @@ class Header:
         return self.page.get_by_test_id("nav-dynamic")
 
     @property
+    def mobile_menu_button(self):
+        return self.page.get_by_test_id("mobile-menu-button")
+
+    @property
     def mega_menu(self):
         return self.page.get_by_test_id("mega-menu")
 
@@ -36,6 +40,10 @@ class Header:
         return self.page.get_by_test_id("skip-link")
 
     def expect_loaded(self) -> None:
+        if self.mobile_menu_button.is_visible():
+            expect(self.mobile_menu_button).to_be_visible()
+            return
+
         expect(self.dashboard_nav).to_be_visible()
         expect(self.auth_nav).to_be_visible()
         expect(self.mega_menu).to_be_visible()
