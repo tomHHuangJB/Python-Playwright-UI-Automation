@@ -6,7 +6,8 @@ from playwright.sync_api import BrowserContext, Page
 
 
 def artifact_dir(root: Path, test_name: str) -> Path:
-    path = root / test_name
+    safe_name = test_name.replace("/", "__").replace("\\", "__").replace("::", "__")
+    path = root / safe_name
     path.mkdir(parents=True, exist_ok=True)
     return path
 

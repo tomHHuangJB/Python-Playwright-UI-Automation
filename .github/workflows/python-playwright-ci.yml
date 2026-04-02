@@ -97,7 +97,6 @@ jobs:
           BASE_UI_URL: http://localhost:5173
           BASE_API_URL: http://localhost:3001
           HEADLESS: "true"
-          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
         run: pytest tests/smoke -m smoke
 
       - name: Upload test artifacts

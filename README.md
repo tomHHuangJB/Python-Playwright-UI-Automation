@@ -75,6 +75,39 @@ Useful env vars:
 - `VIDEO`
 - `SCREENSHOT`
 - `ARTIFACTS_DIR`
+- `PERF_NAVIGATION_MAX_MS`
+- `PERF_DOM_CONTENT_LOADED_MAX_MS`
+
+## Browser Performance Checks
+
+This repo includes a small browser-side performance layer for lightweight guardrails.
+
+What it is:
+
+- Playwright checks against browser navigation timing and other in-browser signals
+- useful for catching obvious page-level regressions in local runs and CI
+- appropriate for route-level budgets such as DOM content loaded and load event timing
+
+What it is not:
+
+- not load testing
+- not throughput or concurrency testing
+- not backend capacity benchmarking
+- not a substitute for k6, JMeter, or Gatling
+
+Run only the browser performance checks:
+
+```bash
+pytest tests/perf -m perf
+```
+
+Example with explicit budgets:
+
+```bash
+PERF_DOM_CONTENT_LOADED_MAX_MS=2500 PERF_NAVIGATION_MAX_MS=4000 pytest tests/perf -m perf
+```
+
+The first performance check currently covers navigation timing on the home route. The budgets are intentionally conservative so the suite stays stable across developer machines and CI runners.
 
 ## Current Coverage
 
