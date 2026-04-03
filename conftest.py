@@ -63,6 +63,11 @@ def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "ui: focused cross-page workflows")
     config.addinivalue_line(
         "markers",
+        "quarantined(reason): known-flaky or temporarily blocked test excluded "
+        "from normal runs unless INCLUDE_QUARANTINED=1",
+    )
+    config.addinivalue_line(
+        "markers",
         "preserve_state: skip automatic API reset/seed baseline for "
         "a test that must manage state itself",
     )
@@ -100,6 +105,11 @@ def _seed_value_from_settings(settings: Settings) -> int:
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_runtest_setup(item: pytest.Item) -> None:
+    quarantined_marker = item.get_closest_marker("quarantined")
+    if quarantined_marker is not None and os.getenv("INCLUDE_QUARANTINED", "0") != "1":
+        reason = quarantined_marker.args[0] if quarantined_marker.args else "No reason recorded"
+        pytest.skip(f"Quarantined test skipped by default: {reason}")
+
     layer = _layer_for_item(item)
     feature = _feature_for_item(item)
     severity = SEVERITY_BY_LAYER[layer]
@@ -110,6 +120,10 @@ def pytest_runtest_setup(item: pytest.Item) -> None:
     allure.dynamic.feature(feature)
     allure.dynamic.tag(layer, feature.lower().replace(" ", "-"))
     allure.dynamic.severity(severity)
+    if quarantined_marker is not None:
+        reason = quarantined_marker.args[0] if quarantined_marker.args else "No reason recorded"
+        allure.dynamic.tag("quarantined")
+        allure.dynamic.parameter("quarantine_reason", reason)
 
     if layer == "bdd":
         allure.dynamic.epic("Business Workflows")
