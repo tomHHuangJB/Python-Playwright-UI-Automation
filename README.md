@@ -125,6 +125,7 @@ In GitHub Actions:
 
 - PR workflow uploads `python-playwright-pr-allure-report`
 - main full-suite workflow uploads `python-playwright-full-suite-allure-report`
+- both workflows also write a GitHub job summary that lists the suite layers and artifact names for quick stakeholder review
 
 That HTML artifact is the intended report for non-technical stakeholders to review. The raw `allure-results` artifact is also uploaded for debugging or reprocessing.
 
