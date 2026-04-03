@@ -104,6 +104,10 @@ runs:
       shell: bash
       run: python -m compileall .
 
+    - name: Prepare report directories
+      shell: bash
+      run: mkdir -p allure-results junit
+
     - name: Run quality checks
       shell: bash
       run: bash ./scripts/run_quality_checks.sh

@@ -24,7 +24,7 @@ jobs:
           BASE_UI_URL: http://localhost:5173
           BASE_API_URL: http://localhost:3001
           HEADLESS: "true"
-        run: pytest tests/smoke tests/regression tests/ui tests/bdd -m "smoke or regression or ui or bdd" --alluredir=allure-results
+        run: pytest tests/smoke tests/regression tests/ui tests/bdd -m "smoke or regression or ui or bdd" --alluredir=allure-results --junitxml=junit/ui-suite.xml
 
       - name: Run browser performance checks
         env:
@@ -33,7 +33,7 @@ jobs:
           HEADLESS: "true"
           PERF_DOM_CONTENT_LOADED_MAX_MS: "4000"
           PERF_NAVIGATION_MAX_MS: "6000"
-        run: pytest tests/perf -m perf --alluredir=allure-results
+        run: pytest tests/perf -m perf --alluredir=allure-results --junitxml=junit/perf-suite.xml
 
       - name: Generate Allure report
         if: always()
@@ -50,6 +50,7 @@ jobs:
             echo "- API target: http://localhost:3001"
             echo "- Allure report artifact: \`python-playwright-full-suite-allure-report\`"
             echo "- Raw Allure results artifact: \`python-playwright-full-suite-allure-results\`"
+            echo "- JUnit XML artifact: \`python-playwright-full-suite-junit-results\`"
             echo "- Playwright artifact bundle: \`python-playwright-full-suite-artifacts\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -75,4 +76,12 @@ jobs:
         with:
           name: python-playwright-full-suite-allure-report
           path: allure-report
+          if-no-files-found: ignore
+
+      - name: Upload JUnit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-playwright-full-suite-junit-results
+          path: junit
           if-no-files-found: ignore
