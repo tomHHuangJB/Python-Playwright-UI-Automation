@@ -106,4 +106,4 @@ runs:
 
     - name: Run quality checks
       shell: bash
-      run: ./scripts/run_quality_checks.sh
+      run: bash ./scripts/run_quality_checks.sh
