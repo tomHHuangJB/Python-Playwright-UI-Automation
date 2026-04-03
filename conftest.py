@@ -201,12 +201,13 @@ def context(
     browser: Browser, settings: Settings, request: pytest.FixtureRequest
 ) -> Generator[BrowserContext, None, None]:
     test_artifact_dir = artifact_dir(settings.artifacts_dir, request.node.nodeid)
+    video_dir = test_artifact_dir / "video"
 
     context = browser.new_context(
         base_url=settings.base_ui_url,
         viewport={"width": settings.viewport_width, "height": settings.viewport_height},
         ignore_https_errors=True,
-        record_video_dir=str(test_artifact_dir / "video") if settings.video != "off" else None,
+        record_video_dir=str(video_dir) if settings.video != "off" else None,
     )
     context.tracing.start(screenshots=True, snapshots=True, sources=True)
     yield context
@@ -215,6 +216,19 @@ def context(
     trace_target = test_artifact_dir / "trace.zip"
     stop_trace(context, failed, settings.trace, trace_target)
     context.close()
+    if failed and trace_target.exists():
+        allure.attach.file(
+            str(trace_target),
+            name="playwright-trace",
+            attachment_type="application/zip",
+        )
+    if failed and video_dir.exists():
+        for video_file in sorted(video_dir.glob("*.webm")):
+            allure.attach.file(
+                str(video_file),
+                name=f"video-{video_file.stem}",
+                attachment_type="video/webm",
+            )
 
 
 @pytest.fixture
