@@ -16,7 +16,12 @@ class ApiClient:
 
     def request(self, method: str, path: str, **kwargs: Any) -> requests.Response:
         url = f"{self.base_api_url}{path}"
-        response = self.session.request(method=method, url=url, timeout=self.timeout_seconds, **kwargs)
+        response = self.session.request(
+            method=method,
+            url=url,
+            timeout=self.timeout_seconds,
+            **kwargs,
+        )
         response.raise_for_status()
         return response
 
