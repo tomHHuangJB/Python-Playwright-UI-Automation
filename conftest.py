@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import os
 from collections.abc import Generator
 from pathlib import Path
@@ -53,12 +54,18 @@ FEATURE_NAME_OVERRIDES = {
     "system": "System",
     "tables": "Tables",
 }
+STATEFUL_LAYERS = frozenset(LAYER_LABELS)
 
 
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "smoke: fast smoke coverage for critical routes")
     config.addinivalue_line("markers", "regression: broader feature coverage")
     config.addinivalue_line("markers", "ui: focused cross-page workflows")
+    config.addinivalue_line(
+        "markers",
+        "preserve_state: skip automatic API reset/seed baseline for "
+        "a test that must manage state itself",
+    )
 
 
 def _layer_for_item(item: pytest.Item) -> str:
@@ -81,6 +88,14 @@ def _feature_for_item(item: pytest.Item) -> str:
 
     stem = Path(str(item.path)).stem.replace("test_", "").replace("_", " ").title()
     return stem or "General"
+
+
+def _seed_value_from_settings(settings: Settings) -> int:
+    try:
+        return int(settings.data_seed)
+    except ValueError:
+        digest = hashlib.sha256(settings.data_seed.encode("utf-8")).hexdigest()
+        return int(digest[:8], 16)
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -220,6 +235,33 @@ def data_factory(settings: Settings) -> DataFactory:
         seed=settings.data_seed,
     )
     return DataFactory(settings.project_root, run_context)
+
+
+@pytest.fixture(autouse=True)
+def isolated_sut_state(
+    request: pytest.FixtureRequest, settings: Settings, sut: SutController
+) -> dict[str, object] | None:
+    layer = _layer_for_item(request.node)
+    if layer not in STATEFUL_LAYERS:
+        return None
+
+    if request.node.get_closest_marker("preserve_state"):
+        return None
+
+    health = sut.ensure_healthy()
+    reset_result = sut.reset_state()
+    seed_value = _seed_value_from_settings(settings)
+    seed_result = sut.seed_state(seed_value)
+
+    baseline_state = {
+        "layer": layer,
+        "seed": seed_value,
+        "health": health,
+        "reset": reset_result,
+        "seed_result": seed_result,
+    }
+    request.node.sut_baseline = baseline_state
+    return baseline_state
 
 
 @pytest.fixture
