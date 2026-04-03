@@ -5,6 +5,8 @@ __pycache__/
 venv/
 .idea/
 artifacts/
+allure-results/
+allure-report/
 playwright-report/
 test-results/
 .local-automation-pids

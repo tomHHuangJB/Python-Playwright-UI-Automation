@@ -9,14 +9,15 @@ from pages.home_page import HomePage
 
 
 @pytest.mark.ui
-def test_login_then_dashboard_shows_authenticated_session(page) -> None:
+def test_login_then_dashboard_shows_authenticated_session(page, data_factory) -> None:
     auth_page = AuthPage(page)
     auth_flow = AuthFlow(auth_page)
     home_page = HomePage(page)
+    credentials = data_factory.demo_credentials()
 
     auth_page.open()
     auth_page.expect_page_ready()
-    auth_flow.sign_in_with_demo_user(remember_me=True)
+    auth_flow.sign_in(credentials, remember_me=True)
 
     home_page.open()
     home_page.expect_page_ready()

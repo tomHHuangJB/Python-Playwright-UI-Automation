@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
 from playwright.sync_api import expect
-from pytest_bdd import given, parsers, then, when
+from pytest_bdd import given, then, when
 
 from flows.auth_flow import AuthFlow
 from pages.auth_page import AuthPage
@@ -12,11 +9,6 @@ from pages.dynamic_page import DynamicPage
 from pages.files_page import FilesPage
 from pages.forms_page import FormsPage
 from pages.tables_page import TablesPage
-
-
-def _load_forms_case() -> dict:
-    data_path = Path(__file__).resolve().parents[3] / "test_data" / "ui" / "forms_cases.json"
-    return json.loads(data_path.read_text())
 
 
 @given("deterministic browser hooks are installed for the dynamic page")
@@ -36,22 +28,22 @@ def install_dynamic_hooks(page) -> None:
 
 
 @when("the user signs in with the demo account")
-def sign_in_demo_account(current_page) -> None:
+def sign_in_demo_account(current_page, data_factory) -> None:
     auth_page = AuthPage(current_page.page)
     auth_page.expect_page_ready()
-    AuthFlow(auth_page).sign_in_with_demo_user(remember_me=True)
+    AuthFlow(auth_page).sign_in(data_factory.demo_credentials(), remember_me=True)
 
 
 @when("the user signs in with the demo account without remember me")
-def sign_in_demo_account_without_remember_me(current_page) -> None:
+def sign_in_demo_account_without_remember_me(current_page, data_factory) -> None:
     auth_page = AuthPage(current_page.page)
     auth_page.expect_page_ready()
-    AuthFlow(auth_page).sign_in_with_demo_user(remember_me=False)
+    AuthFlow(auth_page).sign_in(data_factory.demo_credentials(), remember_me=False)
 
 
 @when("the user submits the demo MFA code")
-def submit_demo_mfa_code(current_page) -> None:
-    AuthFlow(AuthPage(current_page.page)).complete_mfa("123456")
+def submit_demo_mfa_code(current_page, data_factory) -> None:
+    AuthFlow(AuthPage(current_page.page)).complete_mfa(data_factory.demo_credentials().mfa_code)
 
 
 @then("the auth page shows a signed-in token")
@@ -78,21 +70,21 @@ def show_forms_conditional_field(current_page) -> None:
 
 
 @when("the user completes the forms workflow using shared test data")
-def complete_forms_workflow(current_page) -> None:
+def complete_forms_workflow(current_page, data_factory) -> None:
     forms_page = FormsPage(current_page.page)
-    forms_case = _load_forms_case()
+    forms_case = data_factory.forms_case()
 
-    forms_page.advance_wizard_to_step(forms_case["wizard_target_step"])
+    forms_page.advance_wizard_to_step(forms_case.wizard_target_step)
     forms_page.return_wizard_to_step(1)
     forms_page.add_array_item()
-    forms_page.set_array_item_value(1, forms_case["array_new_value"])
-    forms_page.expect_array_item_value(1, forms_case["array_new_value"])
+    forms_page.set_array_item_value(1, forms_case.array_new_value)
+    forms_page.expect_array_item_value(1, forms_case.array_new_value)
     forms_page.remove_array_item(1)
-    forms_page.fill_rich_text(forms_case["rich_text_value"])
-    forms_page.expect_rich_text(forms_case["rich_text_value"])
-    forms_page.set_color(forms_case["color_value"])
-    forms_page.set_range_values(forms_case["range_min"], forms_case["range_max"])
-    forms_page.set_datetime(forms_case["datetime_value"])
+    forms_page.fill_rich_text(forms_case.rich_text_value)
+    forms_page.expect_rich_text(forms_case.rich_text_value)
+    forms_page.set_color(forms_case.color_value)
+    forms_page.set_range_values(forms_case.range_min, forms_case.range_max)
+    forms_page.set_datetime(forms_case.datetime_value)
 
 
 @then("the forms page shows the conditional field")
@@ -200,4 +192,3 @@ def file_download_status_includes_demo_hash(current_page) -> None:
     files_page = FilesPage(current_page.page)
     expect(files_page.download_status).to_contain_text("status:200")
     expect(files_page.download_status).to_contain_text("checksum:demo-hash")
-

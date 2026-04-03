@@ -94,8 +94,8 @@ def api_client(settings: Settings) -> ApiClient:
 
 
 @pytest.fixture(scope="session")
-def data_factory() -> DataFactory:
-    return DataFactory()
+def data_factory(settings: Settings) -> DataFactory:
+    return DataFactory(settings.project_root)
 
 
 @pytest.fixture

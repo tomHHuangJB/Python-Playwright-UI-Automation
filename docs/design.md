@@ -103,7 +103,7 @@ Interview line:
 What to say:
 
 - Data should be externalized when scenarios become repetitive or large.
-- This repo already uses `test_data/ui/forms_cases.json` to separate scenario values from test behavior.
+- This repo uses typed scenario loading for `test_data/ui/forms_cases.json` so scenario values stay externalized without falling back to raw dictionary access in tests.
 
 Real sample:
 
@@ -121,7 +121,7 @@ Why this matters:
 
 Interview line:
 
-> I use data-driven tests for scenario variation, but I avoid turning every test into a generic data engine because that usually hurts readability and debugging.
+> I use data-driven tests for scenario variation, but I keep the data contract typed so broken keys or shape drift fail early instead of becoming hidden dictionary mistakes.
 
 ### 5. Parallel-Ready
 
@@ -402,13 +402,13 @@ Interview value:
 
 ### 2. Add a typed data loader instead of raw dictionaries
 
-Current gap:
+Current improvement already made:
 
-- `forms_cases.json` is loaded as an untyped `dict`.
+- `forms_cases.json` is now parsed into a typed dataclass through the shared data factory.
 
-Recommended improvement:
+Recommended next step:
 
-- Parse JSON into a dataclass so test failures surface schema issues early.
+- Extend the same typed pattern to other scenario-heavy routes and support multiple named cases per file when coverage grows.
 
 Sample direction:
 
