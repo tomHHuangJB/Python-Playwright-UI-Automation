@@ -19,3 +19,4 @@ unset PYTEST_ADDOPTS
 ruff check .
 black --check .
 mypy --explicit-package-bases config fixtures flows utils
+python scripts/validate_suite_catalog.py
