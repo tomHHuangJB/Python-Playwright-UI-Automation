@@ -13,6 +13,7 @@ test-results/
 .local-automation-backend.log
 .local-automation-frontend.log
 docs/implementation_plan.md
+docs/
 *.pyc
 *.pyo
 *.pyd
