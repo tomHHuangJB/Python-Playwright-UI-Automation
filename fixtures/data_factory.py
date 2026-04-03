@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from pathlib import Path
+
+from test_data.scenarios import FormsCase, ScenarioLoader
 
 
 @dataclass(frozen=True)
@@ -10,17 +11,6 @@ class DemoCredentials:
     username: str
     password: str
     mfa_code: str
-
-
-@dataclass(frozen=True)
-class FormsCase:
-    wizard_target_step: int
-    array_new_value: str
-    rich_text_value: str
-    color_value: str
-    range_min: str
-    range_max: str
-    datetime_value: str
 
 
 @dataclass(frozen=True)
@@ -35,14 +25,13 @@ class DataFactory:
         self.project_root = project_root
         self.run_context = run_context
         self._counter = 0
+        self.scenarios = ScenarioLoader(project_root)
 
     def demo_credentials(self) -> DemoCredentials:
         return DemoCredentials(username="principal.engineer", password="demo", mfa_code="123456")
 
     def forms_case(self) -> FormsCase:
-        data_path = self.project_root / "test_data" / "ui" / "forms_cases.json"
-        raw_case = json.loads(data_path.read_text())
-        return FormsCase(**raw_case)
+        return self.scenarios.forms_case()
 
     def _next_token(self, prefix: str) -> str:
         self._counter += 1
