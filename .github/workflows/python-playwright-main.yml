@@ -19,12 +19,12 @@ jobs:
         with:
           local-automation-app-ssh-key: ${{ secrets.LOCAL_AUTOMATION_APP_SSH_KEY }}
 
-      - name: Run regression and UI tests
+      - name: Run smoke, regression, UI, and BDD tests
         env:
           BASE_UI_URL: http://localhost:5173
           BASE_API_URL: http://localhost:3001
           HEADLESS: "true"
-        run: pytest tests/regression tests/ui tests/bdd -m "regression or ui or bdd" --alluredir=allure-results
+        run: pytest tests/smoke tests/regression tests/ui tests/bdd -m "smoke or regression or ui or bdd" --alluredir=allure-results
 
       - name: Run browser performance checks
         env:

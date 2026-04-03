@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Generator
+from pathlib import Path
 
+import allure
 import pytest
 from playwright.sync_api import Browser, BrowserContext, Page, Playwright, sync_playwright
 
@@ -22,11 +25,86 @@ pytest_plugins = [
     "tests.bdd.steps.workflow_steps",
 ]
 
+LAYER_LABELS = ("smoke", "bdd", "ui", "regression", "perf")
+SEVERITY_BY_LAYER = {
+    "smoke": allure.severity_level.CRITICAL,
+    "bdd": allure.severity_level.CRITICAL,
+    "ui": allure.severity_level.NORMAL,
+    "regression": allure.severity_level.NORMAL,
+    "perf": allure.severity_level.MINOR,
+}
+FEATURE_NAME_OVERRIDES = {
+    "a11y": "Accessibility",
+    "auth": "Authentication",
+    "components": "Components",
+    "debug_panel": "Debug Panel",
+    "errors": "Errors",
+    "experiments": "Experiments",
+    "files": "Files",
+    "forms": "Forms",
+    "grpc": "gRPC",
+    "home": "Home",
+    "i18n": "Internationalization",
+    "integrations": "Integrations",
+    "mobile": "Mobile",
+    "navigation": "Navigation",
+    "performance": "Performance",
+    "selectors": "Selectors",
+    "system": "System",
+    "tables": "Tables",
+}
+
 
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "smoke: fast smoke coverage for critical routes")
     config.addinivalue_line("markers", "regression: broader feature coverage")
     config.addinivalue_line("markers", "ui: focused cross-page workflows")
+
+
+def _layer_for_item(item: pytest.Item) -> str:
+    item_markers = {marker.name for marker in item.iter_markers()}
+    for layer in LAYER_LABELS:
+        if layer in item_markers:
+            return layer
+    path_parts = Path(str(item.path)).parts
+    for layer in LAYER_LABELS:
+        if layer in path_parts:
+            return layer
+    return "ui"
+
+
+def _feature_for_item(item: pytest.Item) -> str:
+    nodeid = item.nodeid.lower()
+    for key, label in FEATURE_NAME_OVERRIDES.items():
+        if key in nodeid:
+            return label
+
+    stem = Path(str(item.path)).stem.replace("test_", "").replace("_", " ").title()
+    return stem or "General"
+
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_runtest_setup(item: pytest.Item) -> None:
+    layer = _layer_for_item(item)
+    feature = _feature_for_item(item)
+    severity = SEVERITY_BY_LAYER[layer]
+
+    allure.dynamic.parent_suite("UI Automation")
+    allure.dynamic.suite(layer.upper())
+    allure.dynamic.sub_suite(feature)
+    allure.dynamic.feature(feature)
+    allure.dynamic.tag(layer, feature.lower().replace(" ", "-"))
+    allure.dynamic.severity(severity)
+
+    if layer == "bdd":
+        allure.dynamic.epic("Business Workflows")
+        allure.dynamic.story(feature)
+    elif layer == "smoke":
+        allure.dynamic.epic("Critical Path")
+    elif layer == "perf":
+        allure.dynamic.epic("Performance Guardrails")
+    else:
+        allure.dynamic.epic("UI Coverage")
 
 
 @pytest.hookimpl(hookwrapper=True)
@@ -42,13 +120,13 @@ def settings() -> Settings:
 
 
 @pytest.fixture(scope="session")
-def playwright_instance() -> Playwright:
+def playwright_instance() -> Generator[Playwright, None, None]:
     with sync_playwright() as playwright:
         yield playwright
 
 
 @pytest.fixture(scope="session")
-def browser(playwright_instance: Playwright, settings: Settings) -> Browser:
+def browser(playwright_instance: Playwright, settings: Settings) -> Generator[Browser, None, None]:
     browser_launcher = getattr(playwright_instance, settings.browser_name)
     browser = browser_launcher.launch(headless=settings.headless, slow_mo=settings.slow_mo_ms)
     yield browser
@@ -56,7 +134,9 @@ def browser(playwright_instance: Playwright, settings: Settings) -> Browser:
 
 
 @pytest.fixture
-def context(browser: Browser, settings: Settings, request: pytest.FixtureRequest) -> BrowserContext:
+def context(
+    browser: Browser, settings: Settings, request: pytest.FixtureRequest
+) -> Generator[BrowserContext, None, None]:
     test_artifact_dir = artifact_dir(settings.artifacts_dir, request.node.nodeid)
 
     context = browser.new_context(
@@ -75,7 +155,9 @@ def context(browser: Browser, settings: Settings, request: pytest.FixtureRequest
 
 
 @pytest.fixture
-def page(context: BrowserContext, settings: Settings, request: pytest.FixtureRequest) -> Page:
+def page(
+    context: BrowserContext, settings: Settings, request: pytest.FixtureRequest
+) -> Generator[Page, None, None]:
     test_artifact_dir = artifact_dir(settings.artifacts_dir, request.node.nodeid)
     page = context.new_page()
 
@@ -123,7 +205,7 @@ def page(context: BrowserContext, settings: Settings, request: pytest.FixtureReq
 
 
 @pytest.fixture(scope="session")
-def api_client(settings: Settings) -> ApiClient:
+def api_client(settings: Settings) -> Generator[ApiClient, None, None]:
     client = ApiClient(settings.base_api_url)
     yield client
     client.close()

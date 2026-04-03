@@ -123,7 +123,7 @@ allure generate allure-results --clean -o allure-report
 
 In GitHub Actions:
 
-- PR smoke workflow uploads `python-playwright-smoke-allure-report`
+- PR workflow uploads `python-playwright-pr-allure-report`
 - main full-suite workflow uploads `python-playwright-full-suite-allure-report`
 
 That HTML artifact is the intended report for non-technical stakeholders to review. The raw `allure-results` artifact is also uploaded for debugging or reprocessing.
@@ -213,10 +213,10 @@ Current framework coverage includes:
 
 This repository's GitHub Actions workflow checks out `LocalAutomationApp`, starts the SUT, waits for it to be healthy, and then runs layered test stages.
 
-Current CI split:
+Current CI behavior:
 
-- pull requests: compile + smoke suite + Allure report artifact
-- push to `main`: full suite + performance checks + Allure report artifact
+- pull requests: smoke + regression + UI + BDD + performance suite + Allure report artifact
+- push to `main`: smoke + regression + UI + BDD + performance suite + Allure report artifact
 - shared bootstrap logic lives in `.github/actions/bootstrap-localautomationapp` so the PR and main workflows stay aligned instead of duplicating environment setup
 
 This keeps PR feedback fast while still validating the broader framework on the integration branch.
