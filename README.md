@@ -213,6 +213,7 @@ Current framework coverage includes:
 - failure diagnostics for console errors, page errors, and failed network requests
 - quality gates through `ruff`, `black`, `mypy`, and `pre-commit`
 - parallel execution through `pytest-xdist`
+- explicit quarantine support for unstable tests instead of hiding flakiness behind global retries
 
 ## GitHub CI Setup
 
@@ -223,6 +224,13 @@ Current CI behavior:
 - pull requests: smoke + regression + UI + BDD + performance suite + Allure report artifact
 - push to `main`: smoke + regression + UI + BDD + performance suite + Allure report artifact
 - shared bootstrap logic lives in `.github/actions/bootstrap-localautomationapp` so the PR and main workflows stay aligned instead of duplicating environment setup
+
+Flaky-test policy:
+
+- mark unstable tests with `@pytest.mark.quarantined("reason")`
+- quarantined tests are skipped by default
+- include them only when explicitly requested with `INCLUDE_QUARANTINED=1`
+- prefer fixing or removing quarantine quickly rather than adding global retries
 
 This keeps PR feedback fast while still validating the broader framework on the integration branch.
 
