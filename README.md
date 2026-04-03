@@ -251,6 +251,7 @@ Current framework coverage includes:
 - baseline reset/seed context captured into failure artifacts for replayable debugging
 - failure diagnostics for console errors, page errors, and failed network requests
 - quality gates through `ruff`, `black`, `mypy`, and `pre-commit`
+- strict pytest governance through registered markers, strict config, and strict xfail handling
 - parallel execution through `pytest-xdist`
 - explicit quarantine support for unstable tests instead of hiding flakiness behind global retries
 
