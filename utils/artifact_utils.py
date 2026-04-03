@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from playwright.sync_api import BrowserContext, Page
@@ -22,3 +23,13 @@ def stop_trace(context: BrowserContext, failed: bool, trace_mode: str, trace_pat
 def capture_screenshot(page: Page, target: Path) -> None:
     target.parent.mkdir(parents=True, exist_ok=True)
     page.screenshot(path=str(target), full_page=True)
+
+
+def write_json_artifact(target: Path, payload: object) -> None:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(payload, indent=2, sort_keys=True))
+
+
+def write_text_artifact(target: Path, content: str) -> None:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(content)

@@ -194,10 +194,11 @@ Real sample:
 
 - `conftest.py` starts tracing per test context.
 - On failure it captures screenshot, trace, and optionally video under an artifact path derived from `nodeid`.
+- It also writes console events, page errors, and failed network requests into structured artifacts for faster triage.
 
 Interview line:
 
-> I treat observability as part of the framework. If a test fails in CI, I want a trace, screenshot, and isolated artifact directory without asking engineers to reproduce locally first.
+> I treat observability as part of the framework. If a test fails in CI, I want a trace, screenshot, console log, failed-request log, and isolated artifact directory without asking engineers to reproduce locally first.
 
 ### 8. CI-Friendly
 

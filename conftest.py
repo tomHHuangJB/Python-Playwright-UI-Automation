@@ -16,7 +16,13 @@ from config.settings import Settings, load_settings
 from clients.api_client import ApiClient
 from fixtures.data_factory import DataFactory, TestRunContext
 from fixtures.sut import SutController
-from utils.artifact_utils import artifact_dir, capture_screenshot, stop_trace
+from utils.artifact_utils import (
+    artifact_dir,
+    capture_screenshot,
+    stop_trace,
+    write_json_artifact,
+    write_text_artifact,
+)
 
 pytest_plugins = [
     "tests.bdd.steps.page_steps",
@@ -77,13 +83,49 @@ def context(browser: Browser, settings: Settings, request: pytest.FixtureRequest
 
 @pytest.fixture
 def page(context: BrowserContext, settings: Settings, request: pytest.FixtureRequest) -> Page:
+    test_artifact_dir = artifact_dir(settings.artifacts_dir, request.node.nodeid)
     page = context.new_page()
+
+    console_events: list[dict[str, str]] = []
+    page_errors: list[str] = []
+    request_failures: list[dict[str, str]] = []
+
+    def on_console(message) -> None:
+        console_events.append(
+            {
+                "type": message.type,
+                "text": message.text,
+                "location": str(message.location),
+            }
+        )
+
+    def on_page_error(error) -> None:
+        page_errors.append(str(error))
+
+    def on_request_failed(failed_request) -> None:
+        failure = failed_request.failure
+        request_failures.append(
+            {
+                "url": failed_request.url,
+                "method": failed_request.method,
+                "resource_type": failed_request.resource_type,
+                "error_text": failure or "",
+            }
+        )
+
+    page.on("console", on_console)
+    page.on("pageerror", on_page_error)
+    page.on("requestfailed", on_request_failed)
     yield page
 
     failed = bool(getattr(request.node, "rep_call", None) and request.node.rep_call.failed)
     if failed or settings.screenshot == "on":
-        screenshot_target = artifact_dir(settings.artifacts_dir, request.node.nodeid) / "failure.png"
+        screenshot_target = test_artifact_dir / "failure.png"
         capture_screenshot(page, screenshot_target)
+    if failed:
+        write_json_artifact(test_artifact_dir / "console-events.json", console_events)
+        write_json_artifact(test_artifact_dir / "request-failures.json", request_failures)
+        write_text_artifact(test_artifact_dir / "page-errors.txt", "\n".join(page_errors))
     page.close()
 
 
