@@ -20,5 +20,6 @@ export HEADLESS="${HEADLESS:-false}"
 export BASE_UI_URL="${BASE_UI_URL:-http://localhost:5173}"
 export BASE_API_URL="${BASE_API_URL:-http://localhost:3001}"
 
+bash ./scripts/validate_local_env.sh
 bash ./scripts/run_quality_checks.sh
 bash ./scripts/run_pytest_layer.sh full

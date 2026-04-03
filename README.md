@@ -91,6 +91,12 @@ That script now mirrors the CI suite shape locally:
 - smoke + regression + UI + BDD tests
 - performance tests
 
+Validate the local environment before a run:
+
+```bash
+bash ./scripts/validate_local_env.sh
+```
+
 Run a single named suite layer:
 
 ```bash
