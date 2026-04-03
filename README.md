@@ -11,6 +11,7 @@ This repository targets the highest-value UI routes in `LocalAutomationApp`, sta
 - Python
 - pytest
 - pytest-bdd
+- Allure
 - Playwright sync API
 
 ## Setup
@@ -72,6 +73,12 @@ Run BDD scenarios:
 pytest tests/bdd -m bdd
 ```
 
+Generate local Allure results for a run:
+
+```bash
+pytest tests/bdd -m bdd --alluredir=allure-results
+```
+
 Run the local layered suite script:
 
 ```bash
@@ -91,6 +98,29 @@ Useful env vars:
 - `ARTIFACTS_DIR`
 - `PERF_NAVIGATION_MAX_MS`
 - `PERF_DOM_CONTENT_LOADED_MAX_MS`
+
+## Allure Reporting
+
+This repo supports Allure reporting for both local runs and GitHub Actions.
+
+Local usage:
+
+```bash
+pytest tests/bdd -m bdd --alluredir=allure-results
+```
+
+If you have the Allure CLI installed locally, generate HTML with:
+
+```bash
+allure generate allure-results --clean -o allure-report
+```
+
+In GitHub Actions:
+
+- PR smoke workflow uploads `python-playwright-smoke-allure-report`
+- main full-suite workflow uploads `python-playwright-full-suite-allure-report`
+
+That HTML artifact is the intended report for non-technical stakeholders to review. The raw `allure-results` artifact is also uploaded for debugging or reprocessing.
 
 ## BDD
 
@@ -177,8 +207,8 @@ This repository's GitHub Actions workflow checks out `LocalAutomationApp`, start
 
 Current CI split:
 
-- every branch push and pull request: compile + smoke suite
-- push to `main`: compile + smoke suite + regression suite + UI suite + browser performance checks
+- pull requests: compile + smoke suite + Allure report artifact
+- push to `main`: full suite + performance checks + Allure report artifact
 
 This keeps PR feedback fast while still validating the broader framework on the integration branch.
 
