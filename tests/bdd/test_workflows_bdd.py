@@ -1,6 +1,5 @@
 from pytest_bdd import scenarios
 
-
 scenarios("../../features/auth_workflow.feature")
 scenarios("../../features/forms_workflow.feature")
 scenarios("../../features/tables_workflow.feature")

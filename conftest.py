@@ -1,19 +1,12 @@
 from __future__ import annotations
 
-import sys
 import os
-from pathlib import Path
 
 import pytest
 from playwright.sync_api import Browser, BrowserContext, Page, Playwright, sync_playwright
 
-
-PROJECT_ROOT = Path(__file__).resolve().parent
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
-
-from config.settings import Settings, load_settings
 from clients.api_client import ApiClient
+from config.settings import Settings, load_settings
 from fixtures.data_factory import DataFactory, TestRunContext
 from fixtures.sut import SutController
 from utils.artifact_utils import (
@@ -103,13 +96,13 @@ def page(context: BrowserContext, settings: Settings, request: pytest.FixtureReq
         page_errors.append(str(error))
 
     def on_request_failed(failed_request) -> None:
-        failure = failed_request.failure
+        failure = failed_request.failure or ""
         request_failures.append(
             {
                 "url": failed_request.url,
                 "method": failed_request.method,
                 "resource_type": failed_request.resource_type,
-                "error_text": failure or "",
+                "error_text": str(failure),
             }
         )
 

@@ -85,6 +85,12 @@ Run the local layered suite script:
 ./scripts/run_all_local_tests.sh
 ```
 
+Run quality checks:
+
+```bash
+./scripts/run_quality_checks.sh
+```
+
 Useful env vars:
 
 - `BASE_UI_URL`
@@ -200,6 +206,7 @@ Current framework coverage includes:
 - BDD coverage for auth, forms, tables, dynamic behavior, and file workflows
 - Playwright trace, screenshot, and video artifact capture
 - failure diagnostics for console errors, page errors, and failed network requests
+- quality gates through `ruff`, `black`, `mypy`, and `pre-commit`
 - parallel execution through `pytest-xdist`
 
 ## GitHub CI Setup

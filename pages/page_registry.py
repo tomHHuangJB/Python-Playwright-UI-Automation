@@ -20,7 +20,6 @@ from pages.performance_page import PerformancePage
 from pages.system_page import SystemPage
 from pages.tables_page import TablesPage
 
-
 PAGE_CLASSES: tuple[type[BasePage], ...] = (
     HomePage,
     AuthPage,
@@ -43,4 +42,3 @@ PAGE_CLASSES: tuple[type[BasePage], ...] = (
 PAGE_REGISTRY: Mapping[str, type[BasePage]] = {
     page_class.route_name(): page_class for page_class in PAGE_CLASSES
 }
-
