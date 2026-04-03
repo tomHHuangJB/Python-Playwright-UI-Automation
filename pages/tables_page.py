@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class TablesPage(BasePage):
     PATH = "/tables"
+    ROUTE_NAME = "tables"
 
     def __init__(self, page):
         super().__init__(page)
@@ -73,9 +74,6 @@ class TablesPage(BasePage):
 
     def row_status_select(self, row_id: int):
         return self.by_test_id(f"row-status-{row_id}")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

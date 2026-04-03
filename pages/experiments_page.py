@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class ExperimentsPage(BasePage):
     PATH = "/experiments"
+    ROUTE_NAME = "experiments"
 
     def __init__(self, page):
         super().__init__(page)
@@ -36,9 +37,6 @@ class ExperimentsPage(BasePage):
     @property
     def flag_enabled_label(self):
         return self.page.get_by_text("Flag enabled:")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

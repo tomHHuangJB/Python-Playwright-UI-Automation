@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class I18nPage(BasePage):
     PATH = "/i18n"
+    ROUTE_NAME = "i18n"
 
     def __init__(self, page):
         super().__init__(page)
@@ -20,9 +21,6 @@ class I18nPage(BasePage):
     @property
     def timezone_select(self):
         return self.by_test_id("timezone-select")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

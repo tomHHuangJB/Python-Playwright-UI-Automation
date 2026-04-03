@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class MobilePage(BasePage):
     PATH = "/mobile"
+    ROUTE_NAME = "mobile"
 
     def __init__(self, page):
         super().__init__(page)
@@ -36,9 +37,6 @@ class MobilePage(BasePage):
     @property
     def refresh_trigger(self):
         return self.by_test_id("refresh-trigger")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

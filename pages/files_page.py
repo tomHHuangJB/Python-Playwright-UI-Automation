@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class FilesPage(BasePage):
     PATH = "/files"
+    ROUTE_NAME = "files"
 
     def __init__(self, page):
         super().__init__(page)
@@ -48,9 +49,6 @@ class FilesPage(BasePage):
     @property
     def download_status(self):
         return self.by_test_id("download-status")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class A11yPage(BasePage):
     PATH = "/a11y"
+    ROUTE_NAME = "a11y"
 
     def __init__(self, page):
         super().__init__(page)
@@ -36,9 +37,6 @@ class A11yPage(BasePage):
     @property
     def reduced_motion_button(self):
         return self.by_test_id("reduced-motion")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

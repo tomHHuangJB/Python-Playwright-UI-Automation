@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class ComponentsPage(BasePage):
     PATH = "/components"
+    ROUTE_NAME = "components"
 
     def __init__(self, page):
         super().__init__(page)
@@ -56,9 +57,6 @@ class ComponentsPage(BasePage):
     @property
     def tooltip_content(self):
         return self.page.get_by_text("Delayed tooltip content")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

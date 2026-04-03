@@ -17,6 +17,11 @@ from fixtures.data_factory import DataFactory
 from fixtures.sut import SutController
 from utils.artifact_utils import artifact_dir, capture_screenshot, stop_trace
 
+pytest_plugins = [
+    "tests.bdd.steps.page_steps",
+    "tests.bdd.steps.workflow_steps",
+]
+
 
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "smoke: fast smoke coverage for critical routes")

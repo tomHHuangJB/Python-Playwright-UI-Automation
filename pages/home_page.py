@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class HomePage(BasePage):
     PATH = "/"
+    ROUTE_NAME = "home"
 
     def __init__(self, page):
         super().__init__(page)
@@ -24,9 +25,6 @@ class HomePage(BasePage):
     @property
     def websocket_status(self):
         return self.by_test_id("ws-status")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

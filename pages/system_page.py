@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class SystemPage(BasePage):
     PATH = "/system"
+    ROUTE_NAME = "system"
 
     def __init__(self, page):
         super().__init__(page)
@@ -80,9 +81,6 @@ class SystemPage(BasePage):
     @property
     def role_destructive_action(self):
         return self.by_test_id("role-destructive-action")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

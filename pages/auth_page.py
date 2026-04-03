@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class AuthPage(BasePage):
     PATH = "/auth"
+    ROUTE_NAME = "auth"
 
     def __init__(self, page):
         super().__init__(page)
@@ -64,9 +65,6 @@ class AuthPage(BasePage):
     @property
     def session_sso_card(self):
         return self.by_test_id("session-sso")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()
