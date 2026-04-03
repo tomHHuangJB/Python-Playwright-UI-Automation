@@ -39,6 +39,20 @@ jobs:
         if: always()
         run: allure generate allure-results --clean -o allure-report
 
+      - name: Publish workflow summary
+        if: always()
+        run: |
+          {
+            echo "## Python Playwright PR Summary"
+            echo
+            echo "- Suites: smoke, regression, UI, BDD, performance"
+            echo "- UI target: http://localhost:5173"
+            echo "- API target: http://localhost:3001"
+            echo "- Allure report artifact: \`python-playwright-pr-allure-report\`"
+            echo "- Raw Allure results artifact: \`python-playwright-pr-allure-results\`"
+            echo "- Playwright artifact bundle: \`python-playwright-pr-artifacts\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload test artifacts
         if: always()
         uses: actions/upload-artifact@v4
