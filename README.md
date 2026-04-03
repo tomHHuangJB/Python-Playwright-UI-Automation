@@ -121,7 +121,14 @@ Phase 1 foundation currently includes:
 
 ## GitHub CI Setup
 
-This repository's GitHub Actions workflow checks out `LocalAutomationApp`, starts the SUT, waits for it to be healthy, and then runs the Python smoke suite.
+This repository's GitHub Actions workflow checks out `LocalAutomationApp`, starts the SUT, waits for it to be healthy, and then runs layered test stages.
+
+Current CI split:
+
+- every branch push and pull request: compile + smoke suite
+- push to `main`: compile + smoke suite + regression suite + UI suite + browser performance checks
+
+This keeps PR feedback fast while still validating the broader framework on the integration branch.
 
 The workflow expects this GitHub Actions repository secret:
 
