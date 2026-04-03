@@ -21,68 +21,20 @@ from utils.artifact_utils import (
     write_json_artifact,
     write_text_artifact,
 )
+from utils.suite_catalog import (
+    LAYER_LABELS,
+    OWNER_BY_FEATURE,
+    RISK_BY_LAYER,
+    SEVERITY_BY_LAYER,
+    feature_for_path,
+    layer_for_path,
+)
 
 pytest_plugins = [
     "tests.bdd.steps.page_steps",
     "tests.bdd.steps.workflow_steps",
 ]
 
-LAYER_LABELS = ("smoke", "bdd", "ui", "regression", "perf")
-SEVERITY_BY_LAYER = {
-    "smoke": allure.severity_level.CRITICAL,
-    "bdd": allure.severity_level.CRITICAL,
-    "ui": allure.severity_level.NORMAL,
-    "regression": allure.severity_level.NORMAL,
-    "perf": allure.severity_level.MINOR,
-}
-FEATURE_NAME_OVERRIDES = {
-    "a11y": "Accessibility",
-    "auth": "Authentication",
-    "components": "Components",
-    "debug_panel": "Debug Panel",
-    "errors": "Errors",
-    "experiments": "Experiments",
-    "files": "Files",
-    "forms": "Forms",
-    "grpc": "gRPC",
-    "home": "Home",
-    "i18n": "Internationalization",
-    "integrations": "Integrations",
-    "mobile": "Mobile",
-    "navigation": "Navigation",
-    "performance": "Performance",
-    "selectors": "Selectors",
-    "system": "System",
-    "tables": "Tables",
-}
-OWNER_BY_FEATURE = {
-    "Accessibility": "quality-engineering",
-    "Authentication": "identity-platform",
-    "Components": "frontend-platform",
-    "Debug Panel": "quality-engineering",
-    "Errors": "platform-reliability",
-    "Experiments": "growth-platform",
-    "Files": "content-platform",
-    "Forms": "frontend-platform",
-    "gRPC": "backend-platform",
-    "Home": "frontend-platform",
-    "Internationalization": "frontend-platform",
-    "Integrations": "integrations-platform",
-    "Mobile": "mobile-experience",
-    "Navigation": "frontend-platform",
-    "Performance": "platform-reliability",
-    "Selectors": "quality-engineering",
-    "System": "platform-reliability",
-    "Tables": "frontend-platform",
-    "General": "quality-engineering",
-}
-RISK_BY_LAYER = {
-    "smoke": "critical-path",
-    "bdd": "business-critical",
-    "ui": "workflow",
-    "regression": "broad-regression",
-    "perf": "performance-guardrail",
-}
 STATEFUL_LAYERS = frozenset(LAYER_LABELS)
 
 
@@ -103,10 +55,10 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 def _layer_for_item(item: pytest.Item) -> str:
-    path_parts = Path(str(item.path)).parts
-    for layer in LAYER_LABELS:
-        if layer in path_parts:
-            return layer
+    path = Path(str(item.path))
+    expected_layer = layer_for_path(path)
+    if expected_layer in LAYER_LABELS:
+        return expected_layer
 
     item_markers = {marker.name for marker in item.iter_markers()}
     for layer in LAYER_LABELS:
@@ -120,13 +72,7 @@ def _declared_layers(item: pytest.Item) -> set[str]:
 
 
 def _feature_for_item(item: pytest.Item) -> str:
-    nodeid = item.nodeid.lower()
-    for key, label in FEATURE_NAME_OVERRIDES.items():
-        if key in nodeid:
-            return label
-
-    stem = Path(str(item.path)).stem.replace("test_", "").replace("_", " ").title()
-    return stem or "General"
+    return feature_for_path(Path(str(item.path)))
 
 
 def _seed_value_from_settings(settings: Settings) -> int:

@@ -103,6 +103,12 @@ Run a single named suite layer:
 bash ./scripts/run_pytest_layer.sh [smoke|core|perf|full|quarantined]
 ```
 
+Render the current suite catalog as a markdown coverage matrix:
+
+```bash
+python scripts/render_suite_catalog.py
+```
+
 Run quality checks:
 
 ```bash
@@ -254,6 +260,7 @@ Current framework coverage includes:
 - strict pytest governance through registered markers, strict config, and strict xfail handling
 - parallel execution through `pytest-xdist`
 - explicit quarantine support for unstable tests instead of hiding flakiness behind global retries
+- an explicit suite catalog that maps test entry files to layer, feature, owner, and risk
 
 ## GitHub CI Setup
 
