@@ -129,6 +129,8 @@ In GitHub Actions:
 
 That HTML artifact is the intended report for non-technical stakeholders to review. The raw `allure-results` artifact is also uploaded for debugging or reprocessing.
 
+On failed UI-facing tests, the Playwright artifact bundle also includes the API baseline context used for the test run in `baseline-state.json`, and the same seed/layer metadata is attached to Allure.
+
 ## BDD
 
 This repo also supports BDD on top of the existing pytest + Playwright architecture using `pytest-bdd`.
@@ -206,6 +208,7 @@ Current framework coverage includes:
 - browser-side performance guardrails
 - BDD coverage for auth, forms, tables, dynamic behavior, and file workflows
 - Playwright trace, screenshot, and video artifact capture
+- baseline reset/seed context captured into failure artifacts for replayable debugging
 - failure diagnostics for console errors, page errors, and failed network requests
 - quality gates through `ruff`, `black`, `mypy`, and `pre-commit`
 - parallel execution through `pytest-xdist`

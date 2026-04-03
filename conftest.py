@@ -213,6 +213,9 @@ def page(
         screenshot_target = test_artifact_dir / "failure.png"
         capture_screenshot(page, screenshot_target)
     if failed:
+        baseline_state = getattr(request.node, "sut_baseline", None)
+        if baseline_state is not None:
+            write_json_artifact(test_artifact_dir / "baseline-state.json", baseline_state)
         write_json_artifact(test_artifact_dir / "console-events.json", console_events)
         write_json_artifact(test_artifact_dir / "request-failures.json", request_failures)
         write_text_artifact(test_artifact_dir / "page-errors.txt", "\n".join(page_errors))
@@ -260,6 +263,8 @@ def isolated_sut_state(
         "reset": reset_result,
         "seed_result": seed_result,
     }
+    allure.dynamic.parameter("sut_seed", seed_value)
+    allure.dynamic.parameter("sut_layer", layer)
     request.node.sut_baseline = baseline_state
     return baseline_state
 
