@@ -24,7 +24,7 @@ jobs:
           BASE_UI_URL: http://localhost:5173
           BASE_API_URL: http://localhost:3001
           HEADLESS: "true"
-        run: pytest tests/smoke tests/regression tests/ui tests/bdd -m "smoke or regression or ui or bdd" --alluredir=allure-results --junitxml=junit/ui-suite.xml
+        run: bash ./scripts/run_pytest_layer.sh core --alluredir=allure-results --junitxml=junit/ui-suite.xml
 
       - name: Run browser performance checks
         env:
@@ -33,7 +33,7 @@ jobs:
           HEADLESS: "true"
           PERF_DOM_CONTENT_LOADED_MAX_MS: "4000"
           PERF_NAVIGATION_MAX_MS: "6000"
-        run: pytest tests/perf -m perf --alluredir=allure-results --junitxml=junit/perf-suite.xml
+        run: bash ./scripts/run_pytest_layer.sh perf --alluredir=allure-results --junitxml=junit/perf-suite.xml
 
       - name: Generate Allure report
         if: always()
