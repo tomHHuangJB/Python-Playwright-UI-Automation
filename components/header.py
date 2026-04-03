@@ -2,58 +2,60 @@ from __future__ import annotations
 
 from playwright.sync_api import Page, expect
 
+from pages.base_page import BasePage
 
-class Header:
+
+class Header(BasePage):
     def __init__(self, page: Page) -> None:
-        self.page = page
+        super().__init__(page)
 
     @property
     def dashboard_nav(self):
-        return self.page.get_by_test_id("nav-dashboard")
+        return self.by_test_id("nav-dashboard")
 
     @property
     def auth_nav(self):
-        return self.page.get_by_test_id("nav-auth")
+        return self.by_test_id("nav-auth")
 
     @property
     def forms_nav(self):
-        return self.page.get_by_test_id("nav-forms")
+        return self.by_test_id("nav-forms")
 
     @property
     def tables_nav(self):
-        return self.page.get_by_test_id("nav-tables")
+        return self.by_test_id("nav-tables")
 
     @property
     def dynamic_nav(self):
-        return self.page.get_by_test_id("nav-dynamic")
+        return self.by_test_id("nav-dynamic")
 
     @property
     def mobile_auth_nav(self):
-        return self.page.get_by_test_id("mobile-nav-auth")
+        return self.by_test_id("mobile-nav-auth")
 
     @property
     def mobile_forms_nav(self):
-        return self.page.get_by_test_id("mobile-nav-forms")
+        return self.by_test_id("mobile-nav-forms")
 
     @property
     def mobile_tables_nav(self):
-        return self.page.get_by_test_id("mobile-nav-tables")
+        return self.by_test_id("mobile-nav-tables")
 
     @property
     def mobile_dynamic_nav(self):
-        return self.page.get_by_test_id("mobile-nav-dynamic")
+        return self.by_test_id("mobile-nav-dynamic")
 
     @property
     def mobile_menu_button(self):
-        return self.page.get_by_test_id("mobile-menu-button")
+        return self.by_test_id("mobile-menu-button")
 
     @property
     def mega_menu(self):
-        return self.page.get_by_test_id("mega-menu")
+        return self.by_test_id("mega-menu")
 
     @property
     def skip_link(self):
-        return self.page.get_by_test_id("skip-link")
+        return self.by_test_id("skip-link")
 
     def expect_loaded(self) -> None:
         if self.mobile_menu_button.is_visible():

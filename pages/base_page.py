@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from playwright.sync_api import Locator, Page, expect
+from typing import Any, cast
+
+from playwright.sync_api import FrameLocator, Locator, Page, expect
 
 
 class BasePage:
@@ -18,6 +20,21 @@ class BasePage:
 
     def by_test_id(self, test_id: str) -> Locator:
         return self.page.get_by_test_id(test_id)
+
+    def by_test_id_prefix(self, prefix: str) -> Locator:
+        return self.page.locator(f"[data-testid^='{prefix}']")
+
+    def frame_by_test_id(self, test_id: str) -> FrameLocator:
+        return self.page.frame_locator(f"[data-testid='{test_id}']")
+
+    def by_role(self, role: str, name: str | None = None) -> Locator:
+        return self.page.get_by_role(cast(Any, role), name=name)
+
+    def by_text(self, text: str) -> Locator:
+        return self.page.get_by_text(text)
+
+    def css(self, selector: str) -> Locator:
+        return self.page.locator(selector)
 
     def wait_for_url(self, expected: str) -> None:
         expect(self.page).to_have_url(expected)

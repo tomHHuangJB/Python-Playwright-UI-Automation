@@ -145,6 +145,13 @@ Design rules for BDD in this repo:
 - when a workflow is covered by BDD, the repo should avoid keeping an equivalent classic pytest test for the same scenario
 - Gherkin is intended for business-readable workflows, not every low-level widget check
 
+Selector contract:
+
+- prefer `data-testid` selectors first in page objects and shared components
+- use role-based selectors when the role/name pair is an intentional accessibility contract
+- use raw CSS or text selectors only when the app does not expose a stable contract, and keep them inside page objects
+- avoid putting selectors directly in tests or BDD step files
+
 Current BDD coverage includes:
 
 - auth workflow scenarios
