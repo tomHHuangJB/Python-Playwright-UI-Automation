@@ -91,6 +91,12 @@ That script now mirrors the CI suite shape locally:
 - smoke + regression + UI + BDD tests
 - performance tests
 
+Run a single named suite layer:
+
+```bash
+bash ./scripts/run_pytest_layer.sh [smoke|core|perf|full|quarantined]
+```
+
 Run quality checks:
 
 ```bash
