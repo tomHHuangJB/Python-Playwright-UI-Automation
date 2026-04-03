@@ -199,6 +199,7 @@ Current framework coverage includes:
 - browser-side performance guardrails
 - BDD coverage for auth, forms, tables, dynamic behavior, and file workflows
 - Playwright trace, screenshot, and video artifact capture
+- failure diagnostics for console errors, page errors, and failed network requests
 - parallel execution through `pytest-xdist`
 
 ## GitHub CI Setup
