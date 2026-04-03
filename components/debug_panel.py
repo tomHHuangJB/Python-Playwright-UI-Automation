@@ -24,8 +24,24 @@ class DebugPanel:
         return self.page.get_by_test_id("debug-network")
 
     @property
+    def offline_toggle(self):
+        return self.page.get_by_test_id("debug-offline")
+
+    @property
+    def time_skew_input(self):
+        return self.page.get_by_test_id("debug-time-skew")
+
+    @property
     def permission_override_select(self):
         return self.page.get_by_test_id("debug-permission")
+
+    @property
+    def error_log_viewer(self):
+        return self.page.get_by_test_id("error-log-viewer")
+
+    @property
+    def api_log_viewer(self):
+        return self.page.get_by_test_id("api-log-viewer")
 
     @property
     def state_viewer(self):
@@ -46,6 +62,18 @@ class DebugPanel:
     def enable_test_ids(self) -> None:
         if not self.show_test_ids_toggle.is_checked():
             self.show_test_ids_toggle.click()
+
+    def toggle_offline(self) -> None:
+        self.offline_toggle.click()
+
+    def select_network_profile(self, profile: str) -> None:
+        self.network_profile_select.select_option(profile)
+
+    def select_permission_override(self, value: str) -> None:
+        self.permission_override_select.select_option(value)
+
+    def set_time_skew(self, value: str) -> None:
+        self.time_skew_input.fill(value)
 
     def expect_test_ids_visible(self) -> None:
         expect(self.page.locator("html")).to_have_attribute("data-testid-visible", "true")
