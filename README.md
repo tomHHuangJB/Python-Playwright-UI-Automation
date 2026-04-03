@@ -85,6 +85,12 @@ Run the local layered suite script:
 ./scripts/run_all_local_tests.sh
 ```
 
+That script now mirrors the CI suite shape locally:
+
+- quality checks
+- smoke + regression + UI + BDD tests
+- performance tests
+
 Run quality checks:
 
 ```bash

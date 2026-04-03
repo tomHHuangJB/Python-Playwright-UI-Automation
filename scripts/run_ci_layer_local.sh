@@ -26,7 +26,7 @@ case "$LAYER" in
     pytest tests/smoke -m smoke
     ;;
   full)
-    pytest tests/regression tests/ui -m "regression or ui"
+    pytest tests/smoke tests/regression tests/ui tests/bdd -m "smoke or regression or ui or bdd"
     PERF_DOM_CONTENT_LOADED_MAX_MS="${PERF_DOM_CONTENT_LOADED_MAX_MS:-4000}" \
     PERF_NAVIGATION_MAX_MS="${PERF_NAVIGATION_MAX_MS:-6000}" \
       pytest tests/perf -m perf

@@ -16,4 +16,9 @@ source .venv/bin/activate
 unset PYTEST_PLUGINS
 unset PYTEST_ADDOPTS
 
-HEADLESS=false pytest
+export HEADLESS="${HEADLESS:-false}"
+export BASE_UI_URL="${BASE_UI_URL:-http://localhost:5173}"
+export BASE_API_URL="${BASE_API_URL:-http://localhost:3001}"
+
+bash ./scripts/run_quality_checks.sh
+bash ./scripts/run_ci_layer_local.sh full
