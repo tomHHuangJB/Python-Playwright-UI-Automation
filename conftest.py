@@ -103,15 +103,20 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 def _layer_for_item(item: pytest.Item) -> str:
-    item_markers = {marker.name for marker in item.iter_markers()}
-    for layer in LAYER_LABELS:
-        if layer in item_markers:
-            return layer
     path_parts = Path(str(item.path)).parts
     for layer in LAYER_LABELS:
         if layer in path_parts:
             return layer
+
+    item_markers = {marker.name for marker in item.iter_markers()}
+    for layer in LAYER_LABELS:
+        if layer in item_markers:
+            return layer
     return "ui"
+
+
+def _declared_layers(item: pytest.Item) -> set[str]:
+    return {marker.name for marker in item.iter_markers() if marker.name in LAYER_LABELS}
 
 
 def _feature_for_item(item: pytest.Item) -> str:
@@ -168,6 +173,15 @@ def pytest_runtest_setup(item: pytest.Item) -> None:
         allure.dynamic.epic("Performance Guardrails")
     else:
         allure.dynamic.epic("UI Coverage")
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    for item in items:
+        expected_layer = _layer_for_item(item)
+        declared_layers = _declared_layers(item)
+
+        if expected_layer not in declared_layers:
+            item.add_marker(getattr(pytest.mark, expected_layer))
 
 
 @pytest.hookimpl(hookwrapper=True)
