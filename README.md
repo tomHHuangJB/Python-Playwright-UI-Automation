@@ -132,6 +132,13 @@ That HTML artifact is the intended report for non-technical stakeholders to revi
 
 On failed UI-facing tests, the Playwright artifact bundle also includes the API baseline context used for the test run in `baseline-state.json`, and the same seed/layer metadata is attached to Allure.
 
+Allure metadata is enriched centrally from repo conventions, including:
+
+- suite layer such as smoke, BDD, regression, or performance
+- business feature grouping such as Authentication or Files
+- owner labels for accountable platform areas
+- risk tags such as `critical-path` or `business-critical`
+
 ## BDD
 
 This repo also supports BDD on top of the existing pytest + Playwright architecture using `pytest-bdd`.

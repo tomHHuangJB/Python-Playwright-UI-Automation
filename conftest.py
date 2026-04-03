@@ -54,6 +54,34 @@ FEATURE_NAME_OVERRIDES = {
     "system": "System",
     "tables": "Tables",
 }
+OWNER_BY_FEATURE = {
+    "Accessibility": "quality-engineering",
+    "Authentication": "identity-platform",
+    "Components": "frontend-platform",
+    "Debug Panel": "quality-engineering",
+    "Errors": "platform-reliability",
+    "Experiments": "growth-platform",
+    "Files": "content-platform",
+    "Forms": "frontend-platform",
+    "gRPC": "backend-platform",
+    "Home": "frontend-platform",
+    "Internationalization": "frontend-platform",
+    "Integrations": "integrations-platform",
+    "Mobile": "mobile-experience",
+    "Navigation": "frontend-platform",
+    "Performance": "platform-reliability",
+    "Selectors": "quality-engineering",
+    "System": "platform-reliability",
+    "Tables": "frontend-platform",
+    "General": "quality-engineering",
+}
+RISK_BY_LAYER = {
+    "smoke": "critical-path",
+    "bdd": "business-critical",
+    "ui": "workflow",
+    "regression": "broad-regression",
+    "perf": "performance-guardrail",
+}
 STATEFUL_LAYERS = frozenset(LAYER_LABELS)
 
 
@@ -112,13 +140,18 @@ def pytest_runtest_setup(item: pytest.Item) -> None:
 
     layer = _layer_for_item(item)
     feature = _feature_for_item(item)
+    owner = OWNER_BY_FEATURE.get(feature, "quality-engineering")
+    risk = RISK_BY_LAYER[layer]
     severity = SEVERITY_BY_LAYER[layer]
 
     allure.dynamic.parent_suite("UI Automation")
     allure.dynamic.suite(layer.upper())
     allure.dynamic.sub_suite(feature)
     allure.dynamic.feature(feature)
-    allure.dynamic.tag(layer, feature.lower().replace(" ", "-"))
+    allure.dynamic.tag(layer, feature.lower().replace(" ", "-"), risk, owner)
+    allure.dynamic.label("owner", owner)
+    allure.dynamic.parameter("owner", owner)
+    allure.dynamic.parameter("risk", risk)
     allure.dynamic.severity(severity)
     if quarantined_marker is not None:
         reason = quarantined_marker.args[0] if quarantined_marker.args else "No reason recorded"
