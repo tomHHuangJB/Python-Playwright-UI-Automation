@@ -137,7 +137,7 @@ In GitHub Actions:
 That HTML artifact is the intended report for non-technical stakeholders to review. The raw `allure-results` artifact is also uploaded for debugging or reprocessing.
 
 On failed UI-facing tests, the Playwright artifact bundle also includes the API baseline context used for the test run in `baseline-state.json`, and the same seed/layer metadata is attached to Allure.
-The same failure context is attached directly in Allure as screenshot, console events, request failures, page errors, and baseline state.
+The same failure context is attached directly in Allure as screenshot, trace, retained video, console events, request failures, page errors, and baseline state.
 
 Allure metadata is enriched centrally from repo conventions, including:
 
