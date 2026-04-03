@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class GrpcPage(BasePage):
     PATH = "/grpc"
+    ROUTE_NAME = "grpc"
 
     def __init__(self, page):
         super().__init__(page)
@@ -64,9 +65,6 @@ class GrpcPage(BasePage):
     @property
     def auth_table(self):
         return self.by_test_id("grpc-auth-table")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

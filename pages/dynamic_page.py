@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class DynamicPage(BasePage):
     PATH = "/dynamic"
+    ROUTE_NAME = "dynamic"
 
     def __init__(self, page):
         super().__init__(page)
@@ -80,9 +81,6 @@ class DynamicPage(BasePage):
     @property
     def partial_failure(self):
         return self.by_test_id("partial-failure")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

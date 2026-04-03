@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class FormsPage(BasePage):
     PATH = "/forms"
+    ROUTE_NAME = "forms"
 
     def __init__(self, page):
         super().__init__(page)
@@ -74,9 +75,6 @@ class FormsPage(BasePage):
 
     def array_remove_button(self, index: int):
         return self.by_test_id(f"array-remove-{index}")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

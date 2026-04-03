@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class PerformancePage(BasePage):
     PATH = "/performance"
+    ROUTE_NAME = "performance"
 
     def __init__(self, page) -> None:
         super().__init__(page)
@@ -20,9 +21,6 @@ class PerformancePage(BasePage):
     @property
     def lazy_images(self) -> Locator:
         return self.page.get_by_role("img", name="lazy")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

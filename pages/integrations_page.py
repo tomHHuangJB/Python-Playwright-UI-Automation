@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class IntegrationsPage(BasePage):
     PATH = "/integrations"
+    ROUTE_NAME = "integrations"
 
     def __init__(self, page):
         super().__init__(page)
@@ -28,9 +29,6 @@ class IntegrationsPage(BasePage):
     @property
     def csp_iframe(self):
         return self.by_test_id("csp-iframe")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()

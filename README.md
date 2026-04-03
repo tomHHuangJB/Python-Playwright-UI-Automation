@@ -10,6 +10,7 @@ This repository targets the highest-value UI routes in `LocalAutomationApp`, sta
 
 - Python
 - pytest
+- pytest-bdd
 - Playwright sync API
 
 ## Setup
@@ -21,7 +22,7 @@ pip install -r requirements.txt
 python -m playwright install chromium
 ```
 
-If your shell has old pytest plugin variables set, clear them before running this repo:
+If your shell has inherited pytest plugin variables set from another repo or shell profile, clear them before running this repo:
 
 ```bash
 unset PYTEST_PLUGINS
@@ -54,14 +55,27 @@ BASE_UI_URL=http://localhost:5173 BASE_API_URL=http://localhost:3001 pytest test
 ```
 
 Run all test with browser:
-```
+
+```bash
 HEADLESS=false pytest 
 ```
 
 Run smoke test with browser:
-```
-HEADLESS=false pytest tests/smoke -m smoke
 
+```bash
+HEADLESS=false pytest tests/smoke -m smoke
+```
+
+Run BDD scenarios:
+
+```bash
+pytest tests/bdd -m bdd
+```
+
+Run the local layered suite script:
+
+```bash
+./scripts/run_all_local_tests.sh
 ```
 
 Useful env vars:
@@ -77,6 +91,42 @@ Useful env vars:
 - `ARTIFACTS_DIR`
 - `PERF_NAVIGATION_MAX_MS`
 - `PERF_DOM_CONTENT_LOADED_MAX_MS`
+
+## BDD
+
+This repo also supports BDD on top of the existing pytest + Playwright architecture using `pytest-bdd`.
+
+Design rules for BDD in this repo:
+
+- feature files live in `features/`
+- BDD test entry points live in `tests/bdd/`
+- step definitions must stay thin and call page objects, flows, and fixtures
+- shared route-level BDD steps are backed by a page registry rather than route-specific selector code in step files
+- when a workflow is covered by BDD, the repo should avoid keeping an equivalent classic pytest test for the same scenario
+- Gherkin is intended for business-readable workflows, not every low-level widget check
+
+Current BDD coverage includes:
+
+- auth workflow scenarios
+- forms workflow scenarios
+- tables workflow scenarios
+- dynamic behavior scenarios
+- file workflow scenarios
+
+If you hit local collection issues caused by inherited shell settings, run:
+
+```bash
+env -u PYTEST_PLUGINS -u PYTEST_ADDOPTS pytest tests/bdd -m bdd
+```
+
+Example:
+
+```gherkin
+Scenario: Demo user signs in successfully
+  Given the user opens the "auth" page
+  When the user signs in with the demo account
+  Then the auth page shows a signed-in token
+```
 
 ## Browser Performance Checks
 
@@ -111,13 +161,15 @@ The first performance check currently covers navigation timing on the home route
 
 ## Current Coverage
 
-Phase 1 foundation currently includes:
+Current framework coverage includes:
 
-- framework configuration
-- Playwright browser/context/page fixtures
-- artifact capture on failure
-- dashboard navigation/header page objects
-- first home smoke test
+- smoke coverage for home and auth
+- regression coverage across a11y, i18n, system, integrations, performance, errors, experiments, mobile, components, and grpc-oriented pages
+- UI workflow coverage for navigation, debug panel, advanced selectors, and mobile navigation
+- browser-side performance guardrails
+- BDD coverage for auth, forms, tables, dynamic behavior, and file workflows
+- Playwright trace, screenshot, and video artifact capture
+- parallel execution through `pytest-xdist`
 
 ## GitHub CI Setup
 

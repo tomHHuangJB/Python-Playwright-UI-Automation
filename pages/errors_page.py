@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 
 class ErrorsPage(BasePage):
     PATH = "/errors"
+    ROUTE_NAME = "errors"
 
     def __init__(self, page):
         super().__init__(page)
@@ -80,9 +81,6 @@ class ErrorsPage(BasePage):
     @property
     def security_headers_hint(self):
         return self.page.get_by_text("/api/security/headers")
-
-    def open(self) -> None:
-        self.goto(self.PATH)
 
     def expect_page_ready(self) -> None:
         self.header.expect_loaded()
