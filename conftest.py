@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 from collections.abc import Generator
 from pathlib import Path
@@ -259,13 +260,39 @@ def page(
     if failed or settings.screenshot == "on":
         screenshot_target = test_artifact_dir / "failure.png"
         capture_screenshot(page, screenshot_target)
+        if failed:
+            allure.attach.file(
+                str(screenshot_target),
+                name="failure-screenshot",
+                attachment_type=allure.attachment_type.PNG,
+            )
     if failed:
         baseline_state = getattr(request.node, "sut_baseline", None)
         if baseline_state is not None:
             write_json_artifact(test_artifact_dir / "baseline-state.json", baseline_state)
+            allure.attach(
+                json.dumps(baseline_state, indent=2, sort_keys=True),
+                name="baseline-state",
+                attachment_type=allure.attachment_type.JSON,
+            )
         write_json_artifact(test_artifact_dir / "console-events.json", console_events)
         write_json_artifact(test_artifact_dir / "request-failures.json", request_failures)
         write_text_artifact(test_artifact_dir / "page-errors.txt", "\n".join(page_errors))
+        allure.attach(
+            json.dumps(console_events, indent=2, sort_keys=True),
+            name="console-events",
+            attachment_type=allure.attachment_type.JSON,
+        )
+        allure.attach(
+            json.dumps(request_failures, indent=2, sort_keys=True),
+            name="request-failures",
+            attachment_type=allure.attachment_type.JSON,
+        )
+        allure.attach(
+            "\n".join(page_errors) or "No page errors captured.",
+            name="page-errors",
+            attachment_type=allure.attachment_type.TEXT,
+        )
     page.close()
 
 
