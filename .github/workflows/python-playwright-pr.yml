@@ -6,9 +6,9 @@ on:
       - "**"
 
 jobs:
-  smoke:
+  full-suite:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Check out repository
@@ -19,12 +19,21 @@ jobs:
         with:
           local-automation-app-ssh-key: ${{ secrets.LOCAL_AUTOMATION_APP_SSH_KEY }}
 
-      - name: Run smoke tests
+      - name: Run smoke, regression, UI, and BDD tests
         env:
           BASE_UI_URL: http://localhost:5173
           BASE_API_URL: http://localhost:3001
           HEADLESS: "true"
-        run: pytest tests/smoke -m smoke --alluredir=allure-results
+        run: pytest tests/smoke tests/regression tests/ui tests/bdd -m "smoke or regression or ui or bdd" --alluredir=allure-results
+
+      - name: Run browser performance checks
+        env:
+          BASE_UI_URL: http://localhost:5173
+          BASE_API_URL: http://localhost:3001
+          HEADLESS: "true"
+          PERF_DOM_CONTENT_LOADED_MAX_MS: "4000"
+          PERF_NAVIGATION_MAX_MS: "6000"
+        run: pytest tests/perf -m perf --alluredir=allure-results
 
       - name: Generate Allure report
         if: always()
@@ -34,7 +43,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: python-playwright-smoke-artifacts
+          name: python-playwright-pr-artifacts
           path: artifacts
           if-no-files-found: ignore
 
@@ -42,7 +51,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: python-playwright-smoke-allure-results
+          name: python-playwright-pr-allure-results
           path: allure-results
           if-no-files-found: ignore
 
@@ -50,6 +59,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: python-playwright-smoke-allure-report
+          name: python-playwright-pr-allure-report
           path: allure-report
           if-no-files-found: ignore
