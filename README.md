@@ -217,6 +217,7 @@ Current CI split:
 
 - pull requests: compile + smoke suite + Allure report artifact
 - push to `main`: full suite + performance checks + Allure report artifact
+- shared bootstrap logic lives in `.github/actions/bootstrap-localautomationapp` so the PR and main workflows stay aligned instead of duplicating environment setup
 
 This keeps PR feedback fast while still validating the broader framework on the integration branch.
 
