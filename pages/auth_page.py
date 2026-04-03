@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from playwright.sync_api import expect
+from playwright.sync_api import Page, expect
 
 from components.header import Header
 from pages.base_page import BasePage
@@ -10,7 +10,7 @@ class AuthPage(BasePage):
     PATH = "/auth"
     ROUTE_NAME = "auth"
 
-    def __init__(self, page):
+    def __init__(self, page: Page) -> None:
         super().__init__(page)
         self.header = Header(page)
 

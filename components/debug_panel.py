@@ -2,50 +2,52 @@ from __future__ import annotations
 
 from playwright.sync_api import Page, expect
 
+from pages.base_page import BasePage
 
-class DebugPanel:
+
+class DebugPanel(BasePage):
     def __init__(self, page: Page) -> None:
-        self.page = page
+        super().__init__(page)
 
     @property
     def panel(self):
-        return self.page.get_by_role("dialog", name="Debug panel")
+        return self.by_role("dialog", name="Debug panel")
 
     @property
     def close_button(self):
-        return self.page.get_by_test_id("debug-close")
+        return self.by_test_id("debug-close")
 
     @property
     def show_test_ids_toggle(self):
-        return self.page.get_by_test_id("debug-testids")
+        return self.by_test_id("debug-testids")
 
     @property
     def network_profile_select(self):
-        return self.page.get_by_test_id("debug-network")
+        return self.by_test_id("debug-network")
 
     @property
     def offline_toggle(self):
-        return self.page.get_by_test_id("debug-offline")
+        return self.by_test_id("debug-offline")
 
     @property
     def time_skew_input(self):
-        return self.page.get_by_test_id("debug-time-skew")
+        return self.by_test_id("debug-time-skew")
 
     @property
     def permission_override_select(self):
-        return self.page.get_by_test_id("debug-permission")
+        return self.by_test_id("debug-permission")
 
     @property
     def error_log_viewer(self):
-        return self.page.get_by_test_id("error-log-viewer")
+        return self.by_test_id("error-log-viewer")
 
     @property
     def api_log_viewer(self):
-        return self.page.get_by_test_id("api-log-viewer")
+        return self.by_test_id("api-log-viewer")
 
     @property
     def state_viewer(self):
-        return self.page.get_by_test_id("state-viewer")
+        return self.by_test_id("state-viewer")
 
     def open(self) -> None:
         self.page.keyboard.press("Alt+Shift+D")
@@ -76,4 +78,4 @@ class DebugPanel:
         self.time_skew_input.fill(value)
 
     def expect_test_ids_visible(self) -> None:
-        expect(self.page.locator("html")).to_have_attribute("data-testid-visible", "true")
+        expect(self.css("html")).to_have_attribute("data-testid-visible", "true")
