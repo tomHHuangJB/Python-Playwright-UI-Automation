@@ -126,9 +126,7 @@ def playwright_instance() -> Generator[Playwright, None, None]:
 
 
 @pytest.fixture(scope="session")
-def browser(
-    playwright_instance: Playwright, settings: Settings
-) -> Generator[Browser, None, None]:
+def browser(playwright_instance: Playwright, settings: Settings) -> Generator[Browser, None, None]:
     browser_launcher = getattr(playwright_instance, settings.browser_name)
     browser = browser_launcher.launch(headless=settings.headless, slow_mo=settings.slow_mo_ms)
     yield browser
