@@ -172,6 +172,12 @@ Selector contract:
 - use raw CSS or text selectors only when the app does not expose a stable contract, and keep them inside page objects
 - avoid putting selectors directly in tests or BDD step files
 
+Scenario data contract:
+
+- keep typed scenario models in `test_data/scenarios.py`
+- register scenario names and file paths centrally in the scenario loader
+- load scenario files through `DataFactory` instead of ad hoc JSON reads in tests
+
 Current BDD coverage includes:
 
 - auth workflow scenarios
