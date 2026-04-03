@@ -19,6 +19,11 @@ jobs:
         with:
           local-automation-app-ssh-key: ${{ secrets.LOCAL_AUTOMATION_APP_SSH_KEY }}
 
+      - name: Render suite catalog
+        run: |
+          python scripts/render_suite_catalog.py > suite-catalog/suite-catalog.md
+          python scripts/render_suite_catalog.py --format json > suite-catalog/suite-catalog.json
+
       - name: Run smoke, regression, UI, and BDD tests
         env:
           BASE_UI_URL: http://localhost:5173
@@ -51,6 +56,7 @@ jobs:
             echo "- Allure report artifact: \`python-playwright-pr-allure-report\`"
             echo "- Raw Allure results artifact: \`python-playwright-pr-allure-results\`"
             echo "- JUnit XML artifact: \`python-playwright-pr-junit-results\`"
+            echo "- Suite catalog artifact: \`python-playwright-pr-suite-catalog\`"
             echo "- Playwright artifact bundle: \`python-playwright-pr-artifacts\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -84,4 +90,12 @@ jobs:
         with:
           name: python-playwright-pr-junit-results
           path: junit
+          if-no-files-found: ignore
+
+      - name: Upload suite catalog
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-playwright-pr-suite-catalog
+          path: suite-catalog
           if-no-files-found: ignore
