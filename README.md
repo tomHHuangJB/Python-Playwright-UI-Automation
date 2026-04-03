@@ -115,6 +115,12 @@ Run quality checks:
 ./scripts/run_quality_checks.sh
 ```
 
+Validate suite catalog governance directly:
+
+```bash
+python scripts/validate_suite_catalog.py
+```
+
 Useful env vars:
 
 - `BASE_UI_URL`
@@ -262,6 +268,7 @@ Current framework coverage includes:
 - parallel execution through `pytest-xdist`
 - explicit quarantine support for unstable tests instead of hiding flakiness behind global retries
 - an explicit suite catalog that maps test entry files to layer, feature, owner, and risk
+- suite catalog validation enforced in the quality-check gate
 
 ## GitHub CI Setup
 
