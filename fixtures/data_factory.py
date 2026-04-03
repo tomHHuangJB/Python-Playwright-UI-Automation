@@ -27,6 +27,9 @@ class DataFactory:
         self._counter = 0
         self.scenarios = ScenarioLoader(project_root)
 
+    def available_scenarios(self) -> tuple[str, ...]:
+        return self.scenarios.available_scenarios()
+
     def demo_credentials(self) -> DemoCredentials:
         return DemoCredentials(username="principal.engineer", password="demo", mfa_code="123456")
 
