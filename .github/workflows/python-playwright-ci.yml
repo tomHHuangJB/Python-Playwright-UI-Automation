@@ -3,7 +3,7 @@ name: Python Playwright CI
 on:
   push:
     branches:
-      - "**"
+      - main
   pull_request:
     branches:
       - "**"
