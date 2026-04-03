@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import os
 from pathlib import Path
 
 import pytest
@@ -13,7 +14,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from config.settings import Settings, load_settings
 from clients.api_client import ApiClient
-from fixtures.data_factory import DataFactory
+from fixtures.data_factory import DataFactory, TestRunContext
 from fixtures.sut import SutController
 from utils.artifact_utils import artifact_dir, capture_screenshot, stop_trace
 
@@ -95,7 +96,13 @@ def api_client(settings: Settings) -> ApiClient:
 
 @pytest.fixture(scope="session")
 def data_factory(settings: Settings) -> DataFactory:
-    return DataFactory(settings.project_root)
+    worker_id = os.getenv("PYTEST_XDIST_WORKER", "local")
+    run_context = TestRunContext(
+        run_id=settings.test_run_id,
+        worker_id=worker_id,
+        seed=settings.data_seed,
+    )
+    return DataFactory(settings.project_root, run_context)
 
 
 @pytest.fixture

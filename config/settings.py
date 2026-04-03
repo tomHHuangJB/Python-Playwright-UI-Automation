@@ -16,6 +16,8 @@ class Settings:
     project_root: Path
     base_ui_url: str
     base_api_url: str
+    test_run_id: str
+    data_seed: str
     browser_name: str
     headless: bool
     slow_mo_ms: int
@@ -35,6 +37,8 @@ def load_settings() -> Settings:
         project_root=project_root,
         base_ui_url=os.getenv("BASE_UI_URL", "http://localhost:5173"),
         base_api_url=os.getenv("BASE_API_URL", "http://localhost:3001"),
+        test_run_id=os.getenv("TEST_RUN_ID", "local"),
+        data_seed=os.getenv("DATA_SEED", os.getenv("TEST_RUN_ID", "local")),
         browser_name=os.getenv("BROWSER", "chromium"),
         headless=_as_bool(os.getenv("HEADLESS"), True),
         slow_mo_ms=int(os.getenv("SLOW_MO_MS", "0")),
