@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from uuid import uuid4
 
 
 @dataclass(frozen=True)
@@ -24,9 +23,18 @@ class FormsCase:
     datetime_value: str
 
 
+@dataclass(frozen=True)
+class TestRunContext:
+    run_id: str
+    worker_id: str
+    seed: str
+
+
 class DataFactory:
-    def __init__(self, project_root: Path) -> None:
+    def __init__(self, project_root: Path, run_context: TestRunContext) -> None:
         self.project_root = project_root
+        self.run_context = run_context
+        self._counter = 0
 
     def demo_credentials(self) -> DemoCredentials:
         return DemoCredentials(username="principal.engineer", password="demo", mfa_code="123456")
@@ -36,8 +44,15 @@ class DataFactory:
         raw_case = json.loads(data_path.read_text())
         return FormsCase(**raw_case)
 
+    def _next_token(self, prefix: str) -> str:
+        self._counter += 1
+        return (
+            f"{prefix}-{self.run_context.run_id}-{self.run_context.worker_id}-"
+            f"{self.run_context.seed}-{self._counter:04d}"
+        )
+
     def unique_upload_id(self, prefix: str = "upload") -> str:
-        return f"{prefix}-{uuid4().hex[:12]}"
+        return self._next_token(prefix)
 
     def unique_order_id(self, prefix: str = "order") -> str:
-        return f"{prefix}-{uuid4().hex[:12]}"
+        return self._next_token(prefix)
