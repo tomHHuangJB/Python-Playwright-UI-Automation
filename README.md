@@ -201,8 +201,8 @@ In GitHub Actions:
 
 - PR workflow uploads separate `core-suite` and `perf-suite` Allure/JUnit/artifact bundles
 - `main` workflow uploads separate `core-suite` and `perf-suite` Allure/JUnit/artifact bundles
-- both workflows upload shared suite catalog artifacts in markdown and JSON form
-- both workflows upload shared quarantine report artifacts in markdown and JSON form
+- both workflows upload shared suite catalog artifacts in markdown, JSON, and CSV form
+- both workflows upload shared quarantine report artifacts in markdown, JSON, and CSV form
 - both workflows also write a GitHub job summary that shows real suite, route, owner, and quarantine counts alongside artifact links
 
 CI execution model:

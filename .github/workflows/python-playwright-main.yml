@@ -27,11 +27,13 @@ jobs:
         run: |
           python scripts/render_suite_catalog.py > suite-catalog/suite-catalog.md
           python scripts/render_suite_catalog.py --format json > suite-catalog/suite-catalog.json
+          python scripts/render_suite_catalog.py --format csv > suite-catalog/suite-catalog.csv
 
       - name: Render quarantine report
         run: |
           python scripts/render_quarantine_report.py > quarantine-report/quarantine-report.md
           python scripts/render_quarantine_report.py --format json > quarantine-report/quarantine-report.json
+          python scripts/render_quarantine_report.py --format csv > quarantine-report/quarantine-report.csv
 
       - name: Run smoke, regression, UI, and BDD tests
         env:
@@ -126,11 +128,13 @@ jobs:
         run: |
           python scripts/render_suite_catalog.py > suite-catalog/suite-catalog.md
           python scripts/render_suite_catalog.py --format json > suite-catalog/suite-catalog.json
+          python scripts/render_suite_catalog.py --format csv > suite-catalog/suite-catalog.csv
 
       - name: Render quarantine report
         run: |
           python scripts/render_quarantine_report.py > quarantine-report/quarantine-report.md
           python scripts/render_quarantine_report.py --format json > quarantine-report/quarantine-report.json
+          python scripts/render_quarantine_report.py --format csv > quarantine-report/quarantine-report.csv
 
       - name: Run browser performance checks
         env:
