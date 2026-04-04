@@ -165,12 +165,18 @@ allure generate allure-results --clean -o allure-report
 
 In GitHub Actions:
 
-- PR workflow uploads `python-playwright-pr-allure-report`
-- main full-suite workflow uploads `python-playwright-full-suite-allure-report`
-- both workflows upload JUnit XML artifacts for machine-readable result integration
-- both workflows upload suite catalog artifacts in markdown and JSON form
-- both workflows upload quarantine report artifacts in markdown and JSON form
+- PR workflow uploads separate `core-suite` and `perf-suite` Allure/JUnit/artifact bundles
+- `main` workflow uploads separate `core-suite` and `perf-suite` Allure/JUnit/artifact bundles
+- both workflows upload shared suite catalog artifacts in markdown and JSON form
+- both workflows upload shared quarantine report artifacts in markdown and JSON form
 - both workflows also write a GitHub job summary that shows real suite, route, owner, and quarantine counts alongside artifact links
+
+CI execution model:
+
+- PR and `main` workflows now split the test run into parallel `core-suite` and `perf-suite` jobs
+- `core-suite` runs smoke, regression, UI, and BDD coverage
+- `perf-suite` runs the browser performance guardrail layer
+- this keeps coverage unchanged while reducing end-to-end workflow wall-clock time
 
 That HTML artifact is the intended report for non-technical stakeholders to review. The raw `allure-results` artifact is also uploaded for debugging or reprocessing.
 
