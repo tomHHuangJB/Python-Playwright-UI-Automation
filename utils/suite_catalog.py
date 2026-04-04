@@ -162,3 +162,23 @@ def collect_suite_catalog(root: Path) -> list[SuiteCatalogEntry]:
     tests_root = root / "tests"
     entries = [catalog_entry_for_path(path, root) for path in sorted(tests_root.rglob("test_*.py"))]
     return sorted(entries, key=lambda entry: (entry.layer, entry.feature, entry.path))
+
+
+def covered_routes(entries: list[SuiteCatalogEntry]) -> set[str]:
+    return {route for entry in entries for route in entry.routes}
+
+
+def registered_app_routes() -> set[str]:
+    from pages.page_registry import PAGE_REGISTRY
+
+    return {
+        page_class.PATH for page_class in PAGE_REGISTRY.values() if getattr(page_class, "PATH", "")
+    }
+
+
+def uncovered_registered_routes(entries: list[SuiteCatalogEntry]) -> list[str]:
+    return sorted(registered_app_routes() - covered_routes(entries))
+
+
+def unknown_catalog_routes(entries: list[SuiteCatalogEntry]) -> list[str]:
+    return sorted(covered_routes(entries) - registered_app_routes())
