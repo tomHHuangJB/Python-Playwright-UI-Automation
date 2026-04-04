@@ -18,6 +18,9 @@ def build_summary(entries: list) -> dict[str, dict[str, int]]:
         "layers": dict(sorted(Counter(entry.layer for entry in entries).items())),
         "owners": dict(sorted(Counter(entry.owner for entry in entries).items())),
         "risks": dict(sorted(Counter(entry.risk for entry in entries).items())),
+        "routes": dict(
+            sorted(Counter(route for entry in entries for route in entry.routes).items())
+        ),
     }
 
 
@@ -27,6 +30,7 @@ def build_markdown(root: Path) -> str:
     layer_summary = ", ".join(f"{layer}={count}" for layer, count in summary["layers"].items())
     owner_summary = ", ".join(f"{owner}={count}" for owner, count in summary["owners"].items())
     risk_summary = ", ".join(f"{risk}={count}" for risk, count in summary["risks"].items())
+    route_summary = ", ".join(f"{route}={count}" for route, count in summary["routes"].items())
 
     lines = [
         "# Suite Catalog",
@@ -35,13 +39,16 @@ def build_markdown(root: Path) -> str:
         f"- Layers: {layer_summary}",
         f"- Owners: {owner_summary}",
         f"- Risks: {risk_summary}",
+        f"- Routes: {route_summary}",
         "",
-        "| Layer | Feature | Owner | Risk | Path |",
-        "| --- | --- | --- | --- | --- |",
+        "| Layer | Feature | Owner | Risk | Routes | Scenarios | Path |",
+        "| --- | --- | --- | --- | --- | --- | --- |",
     ]
     for entry in entries:
+        routes = ", ".join(f"`{route}`" for route in entry.routes)
         lines.append(
-            f"| {entry.layer} | {entry.feature} | {entry.owner} | {entry.risk} | `{entry.path}` |"
+            f"| {entry.layer} | {entry.feature} | {entry.owner} | {entry.risk} | "
+            f"{routes} | {entry.scenario_count} | `{entry.path}` |"
         )
     return "\n".join(lines)
 
