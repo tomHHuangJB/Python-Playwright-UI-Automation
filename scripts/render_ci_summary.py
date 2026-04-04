@@ -40,7 +40,6 @@ def build_summary_payload(args: argparse.Namespace) -> dict[str, Any]:
     suite_catalog = _load_json(Path(args.suite_catalog_json))
     quarantine_report = _load_json(Path(args.quarantine_report_json))
     route_gap_report = _load_json(Path(args.route_gap_report_json))
-
     suite_summary = _suite_summary(suite_catalog)
     quarantine_summary = _quarantine_summary(quarantine_report)
     route_gap_summary = _route_gap_summary(route_gap_report)
