@@ -115,6 +115,12 @@ Render the machine-readable route manifest:
 python scripts/render_suite_catalog.py --format json
 ```
 
+Render the quarantine debt report:
+
+```bash
+python scripts/render_quarantine_report.py
+```
+
 Run quality checks:
 
 ```bash
@@ -163,6 +169,7 @@ In GitHub Actions:
 - main full-suite workflow uploads `python-playwright-full-suite-allure-report`
 - both workflows upload JUnit XML artifacts for machine-readable result integration
 - both workflows upload suite catalog artifacts in markdown and JSON form
+- both workflows upload quarantine report artifacts in markdown and JSON form
 - both workflows also write a GitHub job summary that lists the suite layers and artifact names for quick stakeholder review
 
 That HTML artifact is the intended report for non-technical stakeholders to review. The raw `allure-results` artifact is also uploaded for debugging or reprocessing.

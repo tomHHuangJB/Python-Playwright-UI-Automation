@@ -24,6 +24,11 @@ jobs:
           python scripts/render_suite_catalog.py > suite-catalog/suite-catalog.md
           python scripts/render_suite_catalog.py --format json > suite-catalog/suite-catalog.json
 
+      - name: Render quarantine report
+        run: |
+          python scripts/render_quarantine_report.py > quarantine-report/quarantine-report.md
+          python scripts/render_quarantine_report.py --format json > quarantine-report/quarantine-report.json
+
       - name: Run smoke, regression, UI, and BDD tests
         env:
           BASE_UI_URL: http://localhost:5173
@@ -57,6 +62,7 @@ jobs:
             echo "- Raw Allure results artifact: \`python-playwright-pr-allure-results\`"
             echo "- JUnit XML artifact: \`python-playwright-pr-junit-results\`"
             echo "- Suite catalog artifact: \`python-playwright-pr-suite-catalog\`"
+            echo "- Quarantine report artifact: \`python-playwright-pr-quarantine-report\`"
             echo "- Playwright artifact bundle: \`python-playwright-pr-artifacts\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -98,4 +104,12 @@ jobs:
         with:
           name: python-playwright-pr-suite-catalog
           path: suite-catalog
+          if-no-files-found: ignore
+
+      - name: Upload quarantine report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-playwright-pr-quarantine-report
+          path: quarantine-report
           if-no-files-found: ignore
