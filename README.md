@@ -121,10 +121,22 @@ Render the machine-readable route manifest:
 python scripts/render_suite_catalog.py --format json
 ```
 
+Render the suite catalog as CSV:
+
+```bash
+python scripts/render_suite_catalog.py --format csv
+```
+
 Render the quarantine debt report:
 
 ```bash
 python scripts/render_quarantine_report.py
+```
+
+Render the quarantine debt report as CSV:
+
+```bash
+python scripts/render_quarantine_report.py --format csv
 ```
 
 Run quality checks:

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
 from collections import Counter
+from io import StringIO
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -53,11 +55,33 @@ def build_markdown(root: Path) -> str:
     return "\n".join(lines)
 
 
+def build_csv(root: Path) -> str:
+    entries = collect_suite_catalog(root)
+    fieldnames = ["layer", "feature", "owner", "risk", "routes", "scenario_count", "path"]
+
+    output = StringIO()
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+    for entry in entries:
+        writer.writerow(
+            {
+                "layer": entry.layer,
+                "feature": entry.feature,
+                "owner": entry.owner,
+                "risk": entry.risk,
+                "routes": ",".join(entry.routes),
+                "scenario_count": entry.scenario_count,
+                "path": entry.path,
+            }
+        )
+    return output.getvalue()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Render the test suite catalog.")
     parser.add_argument(
         "--format",
-        choices=("markdown", "json"),
+        choices=("markdown", "json", "csv"),
         default="markdown",
         help="Output format.",
     )
@@ -76,6 +100,10 @@ def main() -> int:
                 indent=2,
             )
         )
+        return 0
+
+    if args.format == "csv":
+        print(build_csv(ROOT), end="")
         return 0
 
     print(build_markdown(ROOT))
