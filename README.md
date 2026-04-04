@@ -159,6 +159,9 @@ make suite-catalog-csv
 make quarantine-report
 make quarantine-report-json
 make quarantine-report-csv
+make route-gap-report
+make route-gap-report-json
+make route-gap-report-csv
 make ci-summary-json
 ```
 
@@ -204,7 +207,9 @@ In GitHub Actions:
 - `main` workflow uploads separate `core-suite` and `perf-suite` Allure/JUnit/artifact bundles
 - both workflows upload shared suite catalog artifacts in markdown, JSON, and CSV form
 - both workflows upload shared quarantine report artifacts in markdown, JSON, and CSV form
-- both workflows also write a GitHub job summary that shows real suite, route, owner, and quarantine counts alongside artifact links
+- both workflows upload shared route gap report artifacts in markdown, JSON, and CSV form
+- both workflows upload CI summary JSON artifacts for each job
+- both workflows also write a GitHub job summary that shows real suite, route, owner, quarantine, and uncovered-route counts alongside artifact links
 
 CI execution model:
 
@@ -218,6 +223,9 @@ That HTML artifact is the intended report for non-technical stakeholders to revi
 
 On failed UI-facing tests, the Playwright artifact bundle also includes the API baseline context used for the test run in `baseline-state.json`, and the same seed/layer metadata is attached to Allure.
 The same failure context is attached directly in Allure as screenshot, trace, retained video, console events, request failures, page errors, and baseline state.
+
+Route governance is enforced against the real app registry in `pages/page_registry.py`, not just against the suite catalog itself.
+Use `python scripts/render_route_gap_report.py` or the `make route-gap-report*` targets to inspect route coverage gaps directly.
 
 Allure metadata is enriched centrally from repo conventions, including:
 

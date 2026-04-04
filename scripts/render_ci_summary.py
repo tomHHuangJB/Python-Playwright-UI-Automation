@@ -19,9 +19,11 @@ def _format_counter(counter: dict[str, int]) -> str:
 def build_summary_payload(args: argparse.Namespace) -> dict[str, Any]:
     suite_catalog = _load_json(Path(args.suite_catalog_json))
     quarantine_report = _load_json(Path(args.quarantine_report_json))
+    route_gap_report = _load_json(Path(args.route_gap_report_json))
 
     suite_summary = suite_catalog["summary"]
     quarantine_summary = quarantine_report["summary"]
+    route_gap_summary = route_gap_report["summary"]
 
     return {
         "title": args.title,
@@ -32,12 +34,15 @@ def build_summary_payload(args: argparse.Namespace) -> dict[str, Any]:
         "owner_coverage": suite_summary["owners"],
         "quarantined_tests": quarantine_summary["total"],
         "quarantine_owners": quarantine_summary["owners"],
+        "registered_routes": route_gap_summary["registered_routes"],
+        "uncovered_routes": route_gap_summary["uncovered_routes"],
         "artifacts": {
             "allure_report": args.allure_report_artifact,
             "allure_results": args.allure_results_artifact,
             "junit": args.junit_artifact,
             "suite_catalog": args.suite_catalog_artifact,
             "quarantine_report": args.quarantine_report_artifact,
+            "route_gap_report": args.route_gap_report_artifact,
             "playwright": args.playwright_artifact,
         },
     }
@@ -51,6 +56,8 @@ def build_markdown(payload: dict[str, Any]) -> str:
         f"- API target: {payload['api_url']}",
         f"- Suite layers: {_format_counter(payload['suite_layers'])}",
         f"- Route coverage: {_format_counter(payload['route_coverage'])}",
+        f"- Registered app routes: {payload['registered_routes']}",
+        f"- Uncovered app routes: {payload['uncovered_routes']}",
         f"- Owner coverage: {_format_counter(payload['owner_coverage'])}",
         f"- Quarantined tests: {payload['quarantined_tests']}",
         f"- Quarantine owners: {_format_counter(payload['quarantine_owners'])}",
@@ -59,6 +66,7 @@ def build_markdown(payload: dict[str, Any]) -> str:
         f"- JUnit XML artifact: `{payload['artifacts']['junit']}`",
         f"- Suite catalog artifact: `{payload['artifacts']['suite_catalog']}`",
         f"- Quarantine report artifact: `{payload['artifacts']['quarantine_report']}`",
+        f"- Route gap report artifact: `{payload['artifacts']['route_gap_report']}`",
         f"- Playwright artifact bundle: `{payload['artifacts']['playwright']}`",
     ]
     return "\n".join(lines)
@@ -77,11 +85,13 @@ def main() -> int:
     parser.add_argument("--api-url", required=True)
     parser.add_argument("--suite-catalog-json", required=True)
     parser.add_argument("--quarantine-report-json", required=True)
+    parser.add_argument("--route-gap-report-json", required=True)
     parser.add_argument("--allure-report-artifact", required=True)
     parser.add_argument("--allure-results-artifact", required=True)
     parser.add_argument("--junit-artifact", required=True)
     parser.add_argument("--suite-catalog-artifact", required=True)
     parser.add_argument("--quarantine-report-artifact", required=True)
+    parser.add_argument("--route-gap-report-artifact", required=True)
     parser.add_argument("--playwright-artifact", required=True)
     args = parser.parse_args()
 

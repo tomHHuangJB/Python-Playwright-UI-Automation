@@ -8,16 +8,11 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from utils.suite_catalog import (  # noqa: E402
-    LAYER_LABELS,
-    OWNER_BY_FEATURE,
-    RISK_BY_LAYER,
-    collect_suite_catalog,
-)
+from utils import suite_catalog  # noqa: E402
 
 
 def main() -> int:
-    entries = collect_suite_catalog(ROOT)
+    entries = suite_catalog.collect_suite_catalog(ROOT)
     failures: list[str] = []
 
     if not entries:
@@ -31,16 +26,19 @@ def main() -> int:
             failures.append(f"Duplicate catalog path detected: {entry.path}")
         seen_paths.add(entry.path)
 
-        if entry.layer not in LAYER_LABELS:
+        if entry.layer not in suite_catalog.LAYER_LABELS:
             failures.append(f"Unknown layer for {entry.path}: {entry.layer}")
 
-        expected_risk = RISK_BY_LAYER.get(entry.layer)
+        expected_risk = suite_catalog.RISK_BY_LAYER.get(entry.layer)
         if entry.risk != expected_risk:
             failures.append(
                 f"Risk mismatch for {entry.path}: expected {expected_risk}, got {entry.risk}"
             )
 
-        expected_owner = OWNER_BY_FEATURE.get(entry.feature, "quality-engineering")
+        expected_owner = suite_catalog.OWNER_BY_FEATURE.get(
+            entry.feature,
+            "quality-engineering",
+        )
         if entry.owner != expected_owner:
             failures.append(
                 f"Owner mismatch for {entry.path}: expected {expected_owner}, got {entry.owner}"
@@ -56,9 +54,19 @@ def main() -> int:
                 f"Scenario count must be positive for {entry.path}: got {entry.scenario_count}"
             )
 
-    missing_layers = [layer for layer in LAYER_LABELS if layer_counts[layer] == 0]
+    missing_layers = [layer for layer in suite_catalog.LAYER_LABELS if layer_counts[layer] == 0]
     if missing_layers:
         failures.append(f"Missing suite coverage for layer(s): {', '.join(missing_layers)}")
+
+    uncovered_routes = suite_catalog.uncovered_registered_routes(entries)
+    if uncovered_routes:
+        failures.append(
+            "Missing suite coverage for registered route(s): " + ", ".join(uncovered_routes)
+        )
+
+    unknown_routes = suite_catalog.unknown_catalog_routes(entries)
+    if unknown_routes:
+        failures.append("Catalog routes not found in page registry: " + ", ".join(unknown_routes))
 
     if failures:
         print("Suite catalog validation failed:")
@@ -68,7 +76,7 @@ def main() -> int:
 
     print(
         "Suite catalog validation passed: "
-        + ", ".join(f"{layer}={layer_counts[layer]}" for layer in LAYER_LABELS)
+        + ", ".join(f"{layer}={layer_counts[layer]}" for layer in suite_catalog.LAYER_LABELS)
     )
     return 0
 

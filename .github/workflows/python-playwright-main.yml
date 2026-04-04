@@ -35,6 +35,12 @@ jobs:
           python scripts/render_quarantine_report.py --format json > quarantine-report/quarantine-report.json
           python scripts/render_quarantine_report.py --format csv > quarantine-report/quarantine-report.csv
 
+      - name: Render route gap report
+        run: |
+          python scripts/render_route_gap_report.py > route-gap-report/route-gap-report.md
+          python scripts/render_route_gap_report.py --format json > route-gap-report/route-gap-report.json
+          python scripts/render_route_gap_report.py --format csv > route-gap-report/route-gap-report.csv
+
       - name: Run smoke, regression, UI, and BDD tests
         env:
           BASE_UI_URL: http://localhost:5173
@@ -55,13 +61,31 @@ jobs:
             --api-url "http://localhost:3001" \
             --suite-catalog-json suite-catalog/suite-catalog.json \
             --quarantine-report-json quarantine-report/quarantine-report.json \
+            --route-gap-report-json route-gap-report/route-gap-report.json \
             --allure-report-artifact "python-playwright-main-core-allure-report" \
             --allure-results-artifact "python-playwright-main-core-allure-results" \
             --junit-artifact "python-playwright-main-core-junit-results" \
             --suite-catalog-artifact "python-playwright-main-suite-catalog" \
             --quarantine-report-artifact "python-playwright-main-quarantine-report" \
+            --route-gap-report-artifact "python-playwright-main-route-gap-report" \
             --playwright-artifact "python-playwright-main-core-artifacts" \
             >> "$GITHUB_STEP_SUMMARY"
+          python scripts/render_ci_summary.py \
+            --format json \
+            --title "Python Playwright Main Core Summary" \
+            --ui-url "http://localhost:5173" \
+            --api-url "http://localhost:3001" \
+            --suite-catalog-json suite-catalog/suite-catalog.json \
+            --quarantine-report-json quarantine-report/quarantine-report.json \
+            --route-gap-report-json route-gap-report/route-gap-report.json \
+            --allure-report-artifact "python-playwright-main-core-allure-report" \
+            --allure-results-artifact "python-playwright-main-core-allure-results" \
+            --junit-artifact "python-playwright-main-core-junit-results" \
+            --suite-catalog-artifact "python-playwright-main-suite-catalog" \
+            --quarantine-report-artifact "python-playwright-main-quarantine-report" \
+            --route-gap-report-artifact "python-playwright-main-route-gap-report" \
+            --playwright-artifact "python-playwright-main-core-artifacts" \
+            > ci-summary/python-playwright-main-core-summary.json
 
       - name: Upload core artifacts
         if: always()
@@ -111,6 +135,22 @@ jobs:
           path: quarantine-report
           if-no-files-found: ignore
 
+      - name: Upload route gap report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-playwright-main-route-gap-report
+          path: route-gap-report
+          if-no-files-found: ignore
+
+      - name: Upload core CI summary data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-playwright-main-core-ci-summary
+          path: ci-summary/python-playwright-main-core-summary.json
+          if-no-files-found: ignore
+
   perf-suite:
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -136,6 +176,12 @@ jobs:
           python scripts/render_quarantine_report.py --format json > quarantine-report/quarantine-report.json
           python scripts/render_quarantine_report.py --format csv > quarantine-report/quarantine-report.csv
 
+      - name: Render route gap report
+        run: |
+          python scripts/render_route_gap_report.py > route-gap-report/route-gap-report.md
+          python scripts/render_route_gap_report.py --format json > route-gap-report/route-gap-report.json
+          python scripts/render_route_gap_report.py --format csv > route-gap-report/route-gap-report.csv
+
       - name: Run browser performance checks
         env:
           BASE_UI_URL: http://localhost:5173
@@ -158,13 +204,31 @@ jobs:
             --api-url "http://localhost:3001" \
             --suite-catalog-json suite-catalog/suite-catalog.json \
             --quarantine-report-json quarantine-report/quarantine-report.json \
+            --route-gap-report-json route-gap-report/route-gap-report.json \
             --allure-report-artifact "python-playwright-main-perf-allure-report" \
             --allure-results-artifact "python-playwright-main-perf-allure-results" \
             --junit-artifact "python-playwright-main-perf-junit-results" \
             --suite-catalog-artifact "python-playwright-main-suite-catalog" \
             --quarantine-report-artifact "python-playwright-main-quarantine-report" \
+            --route-gap-report-artifact "python-playwright-main-route-gap-report" \
             --playwright-artifact "python-playwright-main-perf-artifacts" \
             >> "$GITHUB_STEP_SUMMARY"
+          python scripts/render_ci_summary.py \
+            --format json \
+            --title "Python Playwright Main Perf Summary" \
+            --ui-url "http://localhost:5173" \
+            --api-url "http://localhost:3001" \
+            --suite-catalog-json suite-catalog/suite-catalog.json \
+            --quarantine-report-json quarantine-report/quarantine-report.json \
+            --route-gap-report-json route-gap-report/route-gap-report.json \
+            --allure-report-artifact "python-playwright-main-perf-allure-report" \
+            --allure-results-artifact "python-playwright-main-perf-allure-results" \
+            --junit-artifact "python-playwright-main-perf-junit-results" \
+            --suite-catalog-artifact "python-playwright-main-suite-catalog" \
+            --quarantine-report-artifact "python-playwright-main-quarantine-report" \
+            --route-gap-report-artifact "python-playwright-main-route-gap-report" \
+            --playwright-artifact "python-playwright-main-perf-artifacts" \
+            > ci-summary/python-playwright-main-perf-summary.json
 
       - name: Upload perf artifacts
         if: always()
@@ -196,4 +260,12 @@ jobs:
         with:
           name: python-playwright-main-perf-junit-results
           path: junit
+          if-no-files-found: ignore
+
+      - name: Upload perf CI summary data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-playwright-main-perf-ci-summary
+          path: ci-summary/python-playwright-main-perf-summary.json
           if-no-files-found: ignore
