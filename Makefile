@@ -1,4 +1,4 @@
-.PHONY: help setup validate quality test-core test-perf test-full test-quarantined suite-catalog quarantine-report ci-summary
+.PHONY: help setup validate quality validate-catalog test-core test-perf test-full test-quarantined suite-catalog suite-catalog-json suite-catalog-csv quarantine-report quarantine-report-json quarantine-report-csv ci-summary
 
 VENV_ACTIVATE = . .venv/bin/activate
 
@@ -8,12 +8,17 @@ help:
 		"  make setup              Create .venv, install Python deps, install Chromium" \
 		"  make validate           Run local environment preflight checks" \
 		"  make quality            Run lint, format-check, types, and suite catalog validation" \
+		"  make validate-catalog   Validate suite catalog governance directly" \
 		"  make test-core          Run smoke, regression, UI, and BDD coverage" \
 		"  make test-perf          Run browser performance guardrails" \
 		"  make test-full          Run the full local suite shape" \
 		"  make test-quarantined   Run quarantined tests explicitly" \
 		"  make suite-catalog      Render the suite catalog markdown" \
+		"  make suite-catalog-json Render the suite catalog JSON" \
+		"  make suite-catalog-csv  Render the suite catalog CSV" \
 		"  make quarantine-report  Render the quarantine debt report" \
+		"  make quarantine-report-json Render the quarantine debt report JSON" \
+		"  make quarantine-report-csv  Render the quarantine debt report CSV" \
 		"  make ci-summary         Render a local sample CI summary"
 
 setup:
@@ -26,6 +31,9 @@ validate:
 
 quality:
 	@bash ./scripts/run_quality_checks.sh
+
+validate-catalog:
+	@$(VENV_ACTIVATE) && python scripts/validate_suite_catalog.py
 
 test-core:
 	@bash ./scripts/run_pytest_layer.sh core
@@ -42,8 +50,20 @@ test-quarantined:
 suite-catalog:
 	@$(VENV_ACTIVATE) && python scripts/render_suite_catalog.py
 
+suite-catalog-json:
+	@$(VENV_ACTIVATE) && python scripts/render_suite_catalog.py --format json
+
+suite-catalog-csv:
+	@$(VENV_ACTIVATE) && python scripts/render_suite_catalog.py --format csv
+
 quarantine-report:
 	@$(VENV_ACTIVATE) && python scripts/render_quarantine_report.py
+
+quarantine-report-json:
+	@$(VENV_ACTIVATE) && python scripts/render_quarantine_report.py --format json
+
+quarantine-report-csv:
+	@$(VENV_ACTIVATE) && python scripts/render_quarantine_report.py --format csv
 
 ci-summary:
 	@$(VENV_ACTIVATE) && python scripts/render_suite_catalog.py --format json > /tmp/suite-catalog.json
