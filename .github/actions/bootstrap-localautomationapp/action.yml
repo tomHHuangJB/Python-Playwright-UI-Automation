@@ -106,7 +106,7 @@ runs:
 
     - name: Prepare report directories
       shell: bash
-      run: mkdir -p allure-results junit suite-catalog
+      run: mkdir -p allure-results junit suite-catalog quarantine-report
 
     - name: Run quality checks
       shell: bash
