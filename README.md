@@ -159,6 +159,7 @@ make suite-catalog-csv
 make quarantine-report
 make quarantine-report-json
 make quarantine-report-csv
+make ci-summary-json
 ```
 
 Validate suite catalog governance directly:
