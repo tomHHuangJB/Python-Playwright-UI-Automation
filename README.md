@@ -170,7 +170,7 @@ In GitHub Actions:
 - both workflows upload JUnit XML artifacts for machine-readable result integration
 - both workflows upload suite catalog artifacts in markdown and JSON form
 - both workflows upload quarantine report artifacts in markdown and JSON form
-- both workflows also write a GitHub job summary that lists the suite layers and artifact names for quick stakeholder review
+- both workflows also write a GitHub job summary that shows real suite, route, owner, and quarantine counts alongside artifact links
 
 That HTML artifact is the intended report for non-technical stakeholders to review. The raw `allure-results` artifact is also uploaded for debugging or reprocessing.
 
