@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import argparse
 import ast
+import csv
 import json
 import sys
 from collections import Counter
 from dataclasses import asdict, dataclass
+from io import StringIO
 from pathlib import Path
 from typing import TypedDict
 
@@ -127,11 +129,21 @@ def build_markdown(tests: list[QuarantinedTest]) -> str:
     return "\n".join(lines)
 
 
+def build_csv(tests: list[QuarantinedTest]) -> str:
+    fieldnames = ["name", "reason", "owner", "layer", "risk", "path"]
+    output = StringIO()
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+    for test in tests:
+        writer.writerow(test.as_dict())
+    return output.getvalue()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Render the quarantine test report.")
     parser.add_argument(
         "--format",
-        choices=("markdown", "json"),
+        choices=("markdown", "json", "csv"),
         default="markdown",
         help="Output format.",
     )
@@ -149,6 +161,10 @@ def main() -> int:
                 indent=2,
             )
         )
+        return 0
+
+    if args.format == "csv":
+        print(build_csv(tests), end="")
         return 0
 
     print(build_markdown(tests))
