@@ -52,19 +52,19 @@ jobs:
       - name: Publish workflow summary
         if: always()
         run: |
-          {
-            echo "## Python Playwright Main Summary"
-            echo
-            echo "- Suites: smoke, regression, UI, BDD, performance"
-            echo "- UI target: http://localhost:5173"
-            echo "- API target: http://localhost:3001"
-            echo "- Allure report artifact: \`python-playwright-full-suite-allure-report\`"
-            echo "- Raw Allure results artifact: \`python-playwright-full-suite-allure-results\`"
-            echo "- JUnit XML artifact: \`python-playwright-full-suite-junit-results\`"
-            echo "- Suite catalog artifact: \`python-playwright-full-suite-suite-catalog\`"
-            echo "- Quarantine report artifact: \`python-playwright-full-suite-quarantine-report\`"
-            echo "- Playwright artifact bundle: \`python-playwright-full-suite-artifacts\`"
-          } >> "$GITHUB_STEP_SUMMARY"
+          python scripts/render_ci_summary.py \
+            --title "Python Playwright Main Summary" \
+            --ui-url "http://localhost:5173" \
+            --api-url "http://localhost:3001" \
+            --suite-catalog-json suite-catalog/suite-catalog.json \
+            --quarantine-report-json quarantine-report/quarantine-report.json \
+            --allure-report-artifact "python-playwright-full-suite-allure-report" \
+            --allure-results-artifact "python-playwright-full-suite-allure-results" \
+            --junit-artifact "python-playwright-full-suite-junit-results" \
+            --suite-catalog-artifact "python-playwright-full-suite-suite-catalog" \
+            --quarantine-report-artifact "python-playwright-full-suite-quarantine-report" \
+            --playwright-artifact "python-playwright-full-suite-artifacts" \
+            >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload full-suite artifacts
         if: always()
