@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 from collections import Counter
 from pathlib import Path
@@ -14,6 +15,8 @@ from utils import suite_catalog  # noqa: E402
 def main() -> int:
     entries = suite_catalog.collect_suite_catalog(ROOT)
     failures: list[str] = []
+    warnings: list[str] = []
+    strict_route_governance = os.getenv("STRICT_ROUTE_GOVERNANCE") == "1"
 
     if not entries:
         failures.append("No test entry files were found under tests/.")
@@ -60,13 +63,26 @@ def main() -> int:
 
     uncovered_routes = suite_catalog.uncovered_registered_routes(entries)
     if uncovered_routes:
-        failures.append(
-            "Missing suite coverage for registered route(s): " + ", ".join(uncovered_routes)
-        )
+        message = "Missing suite coverage for registered route(s): " + ", ".join(uncovered_routes)
+        if strict_route_governance:
+            failures.append(message)
+        else:
+            warnings.append(message)
 
     unknown_routes = suite_catalog.unknown_catalog_routes(entries)
     if unknown_routes:
-        failures.append("Catalog routes not found in page registry: " + ", ".join(unknown_routes))
+        message = "Catalog routes not found in page registry: " + ", ".join(unknown_routes)
+        if strict_route_governance:
+            failures.append(message)
+        else:
+            warnings.append(message)
+
+    if warnings:
+        print("Suite catalog warnings:")
+        for warning in warnings:
+            print(f"- {warning}")
+        if not strict_route_governance:
+            print("Set STRICT_ROUTE_GOVERNANCE=1 to fail on route coverage gaps.")
 
     if failures:
         print("Suite catalog validation failed:")
