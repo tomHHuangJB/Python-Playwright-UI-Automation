@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: python-playwright-main-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   core-suite:
     runs-on: ubuntu-latest
