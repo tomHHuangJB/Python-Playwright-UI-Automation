@@ -210,6 +210,7 @@ CI execution model:
 - PR and `main` workflows now split the test run into parallel `core-suite` and `perf-suite` jobs
 - `core-suite` runs smoke, regression, UI, and BDD coverage
 - `perf-suite` runs the browser performance guardrail layer
+- workflow concurrency cancels superseded runs on the same PR or branch
 - this keeps coverage unchanged while reducing end-to-end workflow wall-clock time
 
 That HTML artifact is the intended report for non-technical stakeholders to review. The raw `allure-results` artifact is also uploaded for debugging or reprocessing.
