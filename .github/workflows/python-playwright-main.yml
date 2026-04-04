@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  full-suite:
+  core-suite:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -36,6 +36,98 @@ jobs:
           HEADLESS: "true"
         run: bash ./scripts/run_pytest_layer.sh core --alluredir=allure-results --junitxml=junit/ui-suite.xml
 
+      - name: Generate Allure report
+        if: always()
+        run: allure generate allure-results --clean -o allure-report
+
+      - name: Publish workflow summary
+        if: always()
+        run: |
+          python scripts/render_ci_summary.py \
+            --title "Python Playwright Main Core Summary" \
+            --ui-url "http://localhost:5173" \
+            --api-url "http://localhost:3001" \
+            --suite-catalog-json suite-catalog/suite-catalog.json \
+            --quarantine-report-json quarantine-report/quarantine-report.json \
+            --allure-report-artifact "python-playwright-main-core-allure-report" \
+            --allure-results-artifact "python-playwright-main-core-allure-results" \
+            --junit-artifact "python-playwright-main-core-junit-results" \
+            --suite-catalog-artifact "python-playwright-main-suite-catalog" \
+            --quarantine-report-artifact "python-playwright-main-quarantine-report" \
+            --playwright-artifact "python-playwright-main-core-artifacts" \
+            >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload core artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-playwright-main-core-artifacts
+          path: artifacts
+          if-no-files-found: ignore
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-playwright-main-core-allure-results
+          path: allure-results
+          if-no-files-found: ignore
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-playwright-main-core-allure-report
+          path: allure-report
+          if-no-files-found: ignore
+
+      - name: Upload JUnit results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-playwright-main-core-junit-results
+          path: junit
+          if-no-files-found: ignore
+
+      - name: Upload suite catalog
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-playwright-main-suite-catalog
+          path: suite-catalog
+          if-no-files-found: ignore
+
+      - name: Upload quarantine report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-playwright-main-quarantine-report
+          path: quarantine-report
+          if-no-files-found: ignore
+
+  perf-suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Bootstrap test stack
+        uses: ./.github/actions/bootstrap-localautomationapp
+        with:
+          local-automation-app-ssh-key: ${{ secrets.LOCAL_AUTOMATION_APP_SSH_KEY }}
+
+      - name: Render suite catalog
+        run: |
+          python scripts/render_suite_catalog.py > suite-catalog/suite-catalog.md
+          python scripts/render_suite_catalog.py --format json > suite-catalog/suite-catalog.json
+
+      - name: Render quarantine report
+        run: |
+          python scripts/render_quarantine_report.py > quarantine-report/quarantine-report.md
+          python scripts/render_quarantine_report.py --format json > quarantine-report/quarantine-report.json
+
       - name: Run browser performance checks
         env:
           BASE_UI_URL: http://localhost:5173
@@ -53,63 +145,47 @@ jobs:
         if: always()
         run: |
           python scripts/render_ci_summary.py \
-            --title "Python Playwright Main Summary" \
+            --title "Python Playwright Main Perf Summary" \
             --ui-url "http://localhost:5173" \
             --api-url "http://localhost:3001" \
             --suite-catalog-json suite-catalog/suite-catalog.json \
             --quarantine-report-json quarantine-report/quarantine-report.json \
-            --allure-report-artifact "python-playwright-full-suite-allure-report" \
-            --allure-results-artifact "python-playwright-full-suite-allure-results" \
-            --junit-artifact "python-playwright-full-suite-junit-results" \
-            --suite-catalog-artifact "python-playwright-full-suite-suite-catalog" \
-            --quarantine-report-artifact "python-playwright-full-suite-quarantine-report" \
-            --playwright-artifact "python-playwright-full-suite-artifacts" \
+            --allure-report-artifact "python-playwright-main-perf-allure-report" \
+            --allure-results-artifact "python-playwright-main-perf-allure-results" \
+            --junit-artifact "python-playwright-main-perf-junit-results" \
+            --suite-catalog-artifact "python-playwright-main-suite-catalog" \
+            --quarantine-report-artifact "python-playwright-main-quarantine-report" \
+            --playwright-artifact "python-playwright-main-perf-artifacts" \
             >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload full-suite artifacts
+      - name: Upload perf artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: python-playwright-full-suite-artifacts
+          name: python-playwright-main-perf-artifacts
           path: artifacts
           if-no-files-found: ignore
 
-      - name: Upload Allure results
+      - name: Upload perf Allure results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: python-playwright-full-suite-allure-results
+          name: python-playwright-main-perf-allure-results
           path: allure-results
           if-no-files-found: ignore
 
-      - name: Upload Allure report
+      - name: Upload perf Allure report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: python-playwright-full-suite-allure-report
+          name: python-playwright-main-perf-allure-report
           path: allure-report
           if-no-files-found: ignore
 
-      - name: Upload JUnit results
+      - name: Upload perf JUnit results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: python-playwright-full-suite-junit-results
+          name: python-playwright-main-perf-junit-results
           path: junit
-          if-no-files-found: ignore
-
-      - name: Upload suite catalog
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-playwright-full-suite-suite-catalog
-          path: suite-catalog
-          if-no-files-found: ignore
-
-      - name: Upload quarantine report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-playwright-full-suite-quarantine-report
-          path: quarantine-report
           if-no-files-found: ignore
