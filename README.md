@@ -109,6 +109,12 @@ Render the current suite catalog as a markdown coverage matrix:
 python scripts/render_suite_catalog.py
 ```
 
+Render the machine-readable route manifest:
+
+```bash
+python scripts/render_suite_catalog.py --format json
+```
+
 Run quality checks:
 
 ```bash
@@ -268,6 +274,7 @@ Current framework coverage includes:
 - parallel execution through `pytest-xdist`
 - explicit quarantine support for unstable tests instead of hiding flakiness behind global retries
 - an explicit suite catalog that maps test entry files to layer, feature, owner, and risk
+- route-level manifest data that maps coverage to concrete app paths and scenario counts
 - suite catalog validation enforced in the quality-check gate
 
 ## GitHub CI Setup

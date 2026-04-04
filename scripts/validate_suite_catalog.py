@@ -46,6 +46,16 @@ def main() -> int:
                 f"Owner mismatch for {entry.path}: expected {expected_owner}, got {entry.owner}"
             )
 
+        if not entry.routes:
+            failures.append(f"No routes recorded for {entry.path}")
+        elif any(not route.startswith("/") for route in entry.routes):
+            failures.append(f"Invalid route mapping for {entry.path}: {entry.routes}")
+
+        if entry.scenario_count < 1:
+            failures.append(
+                f"Scenario count must be positive for {entry.path}: got {entry.scenario_count}"
+            )
+
     missing_layers = [layer for layer in LAYER_LABELS if layer_counts[layer] == 0]
     if missing_layers:
         failures.append(f"Missing suite coverage for layer(s): {', '.join(missing_layers)}")

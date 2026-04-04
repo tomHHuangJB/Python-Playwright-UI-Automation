@@ -65,6 +65,29 @@ RISK_BY_LAYER = {
     "regression": "broad-regression",
     "perf": "performance-guardrail",
 }
+ROUTES_BY_FEATURE = {
+    "Accessibility": ("/a11y",),
+    "Authentication": ("/auth",),
+    "Business Workflows": ("/auth", "/forms", "/tables", "/dynamic", "/files"),
+    "Components": ("/components",),
+    "Debug Panel": ("/",),
+    "Dynamic Behavior": ("/dynamic",),
+    "Errors": ("/errors",),
+    "Experiments": ("/experiments",),
+    "Files": ("/files",),
+    "Forms": ("/forms",),
+    "gRPC": ("/grpc",),
+    "Home": ("/",),
+    "Internationalization": ("/i18n",),
+    "Integrations": ("/integrations",),
+    "Mobile": ("/mobile",),
+    "Navigation": ("/", "/auth", "/forms", "/tables", "/dynamic"),
+    "Performance": ("/performance",),
+    "Selectors": ("/",),
+    "System": ("/system",),
+    "Tables": ("/tables",),
+    "General": ("/",),
+}
 
 
 @dataclass(frozen=True)
@@ -74,9 +97,13 @@ class SuiteCatalogEntry:
     owner: str
     risk: str
     path: str
+    routes: tuple[str, ...]
+    scenario_count: int
 
-    def as_dict(self) -> dict[str, str]:
-        return asdict(self)
+    def as_dict(self) -> dict[str, str | int | list[str]]:
+        data = asdict(self)
+        data["routes"] = list(self.routes)
+        return data
 
 
 def layer_for_path(path: Path) -> str:
@@ -101,6 +128,22 @@ def owner_for_feature(feature: str) -> str:
     return OWNER_BY_FEATURE.get(feature, "quality-engineering")
 
 
+def routes_for_feature(feature: str) -> tuple[str, ...]:
+    return ROUTES_BY_FEATURE.get(feature, ("/",))
+
+
+def scenario_count_for_path(path: Path, root: Path) -> int:
+    if "bdd" not in path.parts:
+        return 1
+
+    feature_dir = root / "features"
+    count = 0
+    for feature_file in feature_dir.glob("*_workflow.feature"):
+        lines = feature_file.read_text(encoding="utf-8").splitlines()
+        count += sum(1 for line in lines if line.lstrip().startswith("Scenario:"))
+    return count or 1
+
+
 def catalog_entry_for_path(path: Path, root: Path) -> SuiteCatalogEntry:
     layer = layer_for_path(path)
     feature = feature_for_path(path)
@@ -110,6 +153,8 @@ def catalog_entry_for_path(path: Path, root: Path) -> SuiteCatalogEntry:
         owner=owner_for_feature(feature),
         risk=RISK_BY_LAYER[layer],
         path=str(path.relative_to(root)),
+        routes=routes_for_feature(feature),
+        scenario_count=scenario_count_for_path(path, root),
     )
 
 
