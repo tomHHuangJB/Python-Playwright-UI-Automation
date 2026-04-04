@@ -23,6 +23,12 @@ pip install -r requirements.txt
 python -m playwright install chromium
 ```
 
+Equivalent one-command bootstrap:
+
+```bash
+make setup
+```
+
 If your shell has inherited pytest plugin variables set from another repo or shell profile, clear them before running this repo:
 
 ```bash
@@ -125,6 +131,17 @@ Run quality checks:
 
 ```bash
 ./scripts/run_quality_checks.sh
+```
+
+Top-level shortcuts:
+
+```bash
+make quality
+make test-core
+make test-perf
+make test-full
+make suite-catalog
+make quarantine-report
 ```
 
 Validate suite catalog governance directly:
