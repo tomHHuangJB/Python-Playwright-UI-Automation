@@ -149,11 +149,16 @@ Top-level shortcuts:
 
 ```bash
 make quality
+make validate-catalog
 make test-core
 make test-perf
 make test-full
 make suite-catalog
+make suite-catalog-json
+make suite-catalog-csv
 make quarantine-report
+make quarantine-report-json
+make quarantine-report-csv
 ```
 
 Validate suite catalog governance directly:
