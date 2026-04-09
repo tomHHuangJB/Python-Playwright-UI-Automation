@@ -14,7 +14,14 @@ class ApiClient:
     def close(self) -> None:
         self.session.close()
 
-    def request(self, method: str, path: str, **kwargs: Any) -> requests.Response:
+    def request(
+        self,
+        method: str,
+        path: str,
+        *,
+        raise_for_status: bool = True,
+        **kwargs: Any,
+    ) -> requests.Response:
         url = f"{self.base_api_url}{path}"
         response = self.session.request(
             method=method,
@@ -22,14 +29,43 @@ class ApiClient:
             timeout=self.timeout_seconds,
             **kwargs,
         )
-        response.raise_for_status()
+        if raise_for_status:
+            response.raise_for_status()
         return response
 
+    def get(self, path: str, **kwargs: Any) -> requests.Response:
+        return self.request("GET", path, **kwargs)
+
+    def post(
+        self,
+        path: str,
+        payload: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> requests.Response:
+        return self.request("POST", path, json=payload or {}, **kwargs)
+
+    def put(
+        self,
+        path: str,
+        payload: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> requests.Response:
+        return self.request("PUT", path, json=payload or {}, **kwargs)
+
+    def delete(self, path: str, **kwargs: Any) -> requests.Response:
+        return self.request("DELETE", path, **kwargs)
+
     def get_json(self, path: str, **kwargs: Any) -> Any:
-        return self.request("GET", path, **kwargs).json()
+        return self.get(path, **kwargs).json()
 
     def post_json(self, path: str, payload: dict[str, Any] | None = None, **kwargs: Any) -> Any:
-        return self.request("POST", path, json=payload or {}, **kwargs).json()
+        return self.post(path, payload=payload, **kwargs).json()
+
+    def put_json(self, path: str, payload: dict[str, Any] | None = None, **kwargs: Any) -> Any:
+        return self.put(path, payload=payload, **kwargs).json()
+
+    def delete_json(self, path: str, **kwargs: Any) -> Any:
+        return self.delete(path, **kwargs).json()
 
     def health(self) -> dict[str, Any]:
         return self.get_json("/health")

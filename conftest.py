@@ -40,6 +40,11 @@ STATEFUL_LAYERS = frozenset(LAYER_LABELS)
 
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "smoke: fast smoke coverage for critical routes")
+    config.addinivalue_line("markers", "api: backend API contract and behavior checks")
+    config.addinivalue_line(
+        "markers",
+        "data_validation: API payload schema and invariant validation",
+    )
     config.addinivalue_line("markers", "regression: broader feature coverage")
     config.addinivalue_line("markers", "ui: focused cross-page workflows")
     config.addinivalue_line(
@@ -113,6 +118,10 @@ def pytest_runtest_setup(item: pytest.Item) -> None:
     if layer == "bdd":
         allure.dynamic.epic("Business Workflows")
         allure.dynamic.story(feature)
+    elif layer == "api":
+        allure.dynamic.epic("API Contracts")
+    elif layer == "data_validation":
+        allure.dynamic.epic("Data Validation")
     elif layer == "smoke":
         allure.dynamic.epic("Critical Path")
     elif layer == "perf":
