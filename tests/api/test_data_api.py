@@ -9,8 +9,8 @@ from assertions.api_assertions import (
     assert_mapping,
     assert_non_empty_string,
     assert_required_keys,
-    assert_sequence,
     assert_response_header,
+    assert_sequence,
 )
 
 

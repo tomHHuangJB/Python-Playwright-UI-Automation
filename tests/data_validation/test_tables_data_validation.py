@@ -13,7 +13,10 @@ from assertions.api_assertions import (
 
 @pytest.mark.data_validation
 def test_table_filter_and_sort_invariants_hold_for_active_rows(api_client) -> None:
-    payload = api_client.get_json("/api/table", params={"status": "Active", "sort": "id", "order": "desc"})
+    payload = api_client.get_json(
+        "/api/table",
+        params={"status": "Active", "sort": "id", "order": "desc"},
+    )
 
     assert_required_keys(payload, ("items", "total"))
     assert_sequence(payload["items"], "items")

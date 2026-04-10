@@ -29,7 +29,10 @@ def test_upload_and_download_endpoints_expose_expected_headers_and_progress(
     assert first_chunk["received"] == 1
     assert first_chunk["total"] == 3
 
-    incomplete_payload = api_client.post_json("/api/upload/complete", headers={"upload-id": upload_id})
+    incomplete_payload = api_client.post_json(
+        "/api/upload/complete",
+        headers={"upload-id": upload_id},
+    )
     assert_required_keys(incomplete_payload, ("uploadId", "complete"))
     assert incomplete_payload["uploadId"] == upload_id
     assert_boolean(incomplete_payload["complete"], "complete")
@@ -43,7 +46,10 @@ def test_upload_and_download_endpoints_expose_expected_headers_and_progress(
     assert final_chunk["received"] == 3
     assert final_chunk["total"] == 3
 
-    complete_payload = api_client.post_json("/api/upload/complete", headers={"upload-id": upload_id})
+    complete_payload = api_client.post_json(
+        "/api/upload/complete",
+        headers={"upload-id": upload_id},
+    )
     assert complete_payload["complete"] is True
 
     download_response = api_client.get("/api/download/42")
