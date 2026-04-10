@@ -1,4 +1,4 @@
-.PHONY: help setup validate quality validate-catalog test-core test-perf test-full test-quarantined suite-catalog suite-catalog-json suite-catalog-csv quarantine-report quarantine-report-json quarantine-report-csv route-gap-report route-gap-report-json route-gap-report-csv ci-summary ci-summary-json
+.PHONY: help setup validate quality validate-catalog test-api test-data test-core test-perf test-full test-quarantined suite-catalog suite-catalog-json suite-catalog-csv quarantine-report quarantine-report-json quarantine-report-csv route-gap-report route-gap-report-json route-gap-report-csv ci-summary ci-summary-json
 
 VENV_ACTIVATE = . .venv/bin/activate
 
@@ -9,6 +9,8 @@ help:
 		"  make validate           Run local environment preflight checks" \
 		"  make quality            Run lint, format-check, types, and suite catalog validation" \
 		"  make validate-catalog   Validate suite catalog governance directly" \
+		"  make test-api           Run backend API contract coverage" \
+		"  make test-data          Run API data validation coverage" \
 		"  make test-core          Run smoke, regression, UI, and BDD coverage" \
 		"  make test-perf          Run browser performance guardrails" \
 		"  make test-full          Run the full local suite shape" \
@@ -38,6 +40,12 @@ quality:
 
 validate-catalog:
 	@$(VENV_ACTIVATE) && python scripts/validate_suite_catalog.py
+
+test-api:
+	@bash ./scripts/run_pytest_layer.sh api
+
+test-data:
+	@bash ./scripts/run_pytest_layer.sh data
 
 test-core:
 	@bash ./scripts/run_pytest_layer.sh core

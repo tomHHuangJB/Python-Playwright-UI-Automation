@@ -5,9 +5,11 @@ from pathlib import Path
 
 import allure
 
-LAYER_LABELS = ("smoke", "bdd", "ui", "regression", "perf")
+LAYER_LABELS = ("smoke", "api", "data_validation", "bdd", "ui", "regression", "perf")
 SEVERITY_BY_LAYER = {
     "smoke": allure.severity_level.CRITICAL,
+    "api": allure.severity_level.CRITICAL,
+    "data_validation": allure.severity_level.NORMAL,
     "bdd": allure.severity_level.CRITICAL,
     "ui": allure.severity_level.NORMAL,
     "regression": allure.severity_level.NORMAL,
@@ -60,6 +62,8 @@ OWNER_BY_FEATURE = {
 }
 RISK_BY_LAYER = {
     "smoke": "critical-path",
+    "api": "service-contract",
+    "data_validation": "data-integrity",
     "bdd": "business-critical",
     "ui": "workflow",
     "regression": "broad-regression",

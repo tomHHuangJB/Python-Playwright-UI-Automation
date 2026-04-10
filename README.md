@@ -49,6 +49,18 @@ Run smoke tests:
 pytest tests/smoke -m smoke
 ```
 
+Run backend API contract tests:
+
+```bash
+pytest tests/api -m api
+```
+
+Run API data validation tests:
+
+```bash
+pytest tests/data_validation -m data_validation
+```
+
 Run a single test file:
 
 ```bash
@@ -106,7 +118,7 @@ bash ./scripts/validate_local_env.sh
 Run a single named suite layer:
 
 ```bash
-bash ./scripts/run_pytest_layer.sh [smoke|core|perf|full|quarantined]
+bash ./scripts/run_pytest_layer.sh [smoke|api|data|core|perf|full|quarantined]
 ```
 
 Render the current suite catalog as a markdown coverage matrix:
@@ -150,6 +162,8 @@ Top-level shortcuts:
 ```bash
 make quality
 make validate-catalog
+make test-api
+make test-data
 make test-core
 make test-perf
 make test-full
@@ -184,6 +198,12 @@ Useful env vars:
 - `ARTIFACTS_DIR`
 - `PERF_NAVIGATION_MAX_MS`
 - `PERF_DOM_CONTENT_LOADED_MAX_MS`
+
+API/data coverage in this repo now includes:
+
+- backend contract checks for auth, CRUD, files, and service hooks
+- payload schema and invariant validation for tables, deduplication, partial content, and system metadata
+- the same reset/seed isolation model used by the UI suite
 
 ## Allure Reporting
 

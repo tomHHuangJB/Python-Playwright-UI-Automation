@@ -26,8 +26,15 @@ case "$LAYER" in
   smoke)
     pytest tests/smoke -m smoke "$@"
     ;;
+  api)
+    pytest tests/api -m api "$@"
+    ;;
+  data)
+    pytest tests/data_validation -m data_validation "$@"
+    ;;
   core)
-    pytest tests/smoke tests/regression tests/ui tests/bdd -m "smoke or regression or ui or bdd" "$@"
+    pytest tests/smoke tests/api tests/data_validation tests/regression tests/ui tests/bdd \
+      -m "smoke or api or data_validation or regression or ui or bdd" "$@"
     ;;
   perf)
     PERF_DOM_CONTENT_LOADED_MAX_MS="${PERF_DOM_CONTENT_LOADED_MAX_MS:-4000}" \
@@ -43,7 +50,7 @@ case "$LAYER" in
     ;;
   *)
     echo "Unknown layer: $LAYER"
-    echo "Usage: bash scripts/run_pytest_layer.sh [smoke|core|perf|full|quarantined]"
+    echo "Usage: bash scripts/run_pytest_layer.sh [smoke|api|data|core|perf|full|quarantined]"
     exit 2
     ;;
 esac
